@@ -1,0 +1,94 @@
+'use client';
+
+import { useState, useRef } from 'react';
+import { X } from 'lucide-react';
+
+interface OtpModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onVerify: (otp: string) => void;
+}
+
+export default function OtpModal({ isOpen, onClose, onVerify }: OtpModalProps) {
+  const [otp, setOtp] = useState(Array(6).fill(''));
+  const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+
+  const handleChange = (index: number, value: string) => {
+    if (/^\d?$/.test(value)) {
+      const updatedOtp = [...otp];
+      updatedOtp[index] = value;
+      setOtp(updatedOtp);
+
+      if (value && index < 5) {
+        inputRefs.current[index + 1]?.focus();
+      }
+    }
+  };
+
+  const handleKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Backspace' && !otp[index] && index > 0) {
+      inputRefs.current[index - 1]?.focus();
+    }
+  };
+
+  const handleVerify = () => {
+    onVerify(otp.join(''));
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center px-4">
+      <div className="bg-white rounded-xl shadow-lg p-6 w-full max-w-sm relative">
+        <button
+          onClick={onClose}
+          className="absolute top-3 right-3 text-accent hover:text-gray-600"
+        >
+          <X className="w-5 h-5" />
+        </button>
+
+        <h2 className="text-xl font-semibold text-center mb-1 text-black">OTP Verification</h2>
+        <p className="text-sm text-text text-center mb-4">
+          Enter verification code sent to <span className="font-medium text-text">+91 9752348952</span>
+        </p>
+
+        <div className="flex justify-center gap-2 mb-2">
+          {otp.map((digit, index) => (
+            <input
+              key={index}
+              ref={(el) => (inputRefs.current[index] = el)}
+              maxLength={1}
+              value={digit}
+              onChange={(e) => handleChange(index, e.target.value)}
+              onKeyDown={(e) => handleKeyDown(index, e)}
+              className="w-10 h-10 text-center border border-gray-300 rounded-md text-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary"
+            />
+          ))}
+        </div>
+
+        <div className="flex justify-end mb-4">
+          <button
+            className="text-sm text-primary font-medium hover:underline"
+            onClick={() => alert('Resend OTP clicked')}
+          >
+            Resend
+          </button>
+        </div>
+
+        <button
+          onClick={handleVerify}
+          className="w-full bg-primary text-white font-semibold py-2 rounded-md hover:bg-opacity-90 transition"
+        >
+          Verify
+        </button>
+
+        <button
+          onClick={onClose}
+          className="mt-2 w-full text-sm text-primary text-center hover:underline"
+        >
+          Cancel
+        </button>
+      </div>
+    </div>
+  );
+}
