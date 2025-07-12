@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
-import TravelBudLogo from '@/assets/images/TravelBud.png';
 import PrimaryButton from '@/components/PrimaryButton';
 import { Input } from '@/components/ui/input';
 import ResendOtpModal from '@/components/auth/ResendOtpModal';
@@ -38,7 +37,7 @@ export default function ForgotPassword({ onSubmit, onCancel }: Props) {
     <div className="w-full h-full flex flex-col items-center justify-between px-6 py-10">
       <div className="w-full max-w-lg flex-1 flex flex-col">
         <Image
-          src={TravelBudLogo}
+          src="/images/TravelBud.png"
           alt="TravelBud Logo"
           width={220}
           height={80}
@@ -49,7 +48,7 @@ export default function ForgotPassword({ onSubmit, onCancel }: Props) {
           Forgot password
         </h2>
         <p className="text-center font-poppins text-text text-base mb-6">
-          Provide your account's email for which you want to reset your password
+          Provide your account&apos;s email for which you want to reset your password
         </p>
 
         <div className="mb-8">
@@ -78,6 +77,7 @@ export default function ForgotPassword({ onSubmit, onCancel }: Props) {
           </PrimaryButton>
         </div>
       </div>
+
       <ResendOtpModal
         open={showModal}
         onClose={() => setShowModal(false)}

@@ -1,11 +1,10 @@
 'use client';
 
 import Image from 'next/image';
-import { useState, useRef } from 'react';
+import { useState, useRef , useEffect } from 'react';
 import PrimaryButton from '@/components/PrimaryButton';
 import SecondaryButton from '@/components/SecondaryButton';
 import { Button } from '@/components/ui/button';
-import TravelBudLogo from '@/assets/images/TravelBud.png';
 
 interface Props {
   phone?: string;
@@ -22,6 +21,13 @@ export default function OtpVerificationBox({
 }: Props) {
   const [otp, setOtp] = useState(Array(6).fill(''));
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+  const [hasMounted, setHasMounted] = useState(false);
+
+useEffect(() => {
+  setHasMounted(true);
+}, []);
+
+if (!hasMounted) return null;
 
   const handleChange = (index: number, value: string) => {
     if (/^\d?$/.test(value)) {
@@ -47,7 +53,7 @@ export default function OtpVerificationBox({
       <div>
         {/* Logo */}
         <Image
-          src={TravelBudLogo}
+          src="/images/TravelBud.png"
           alt="TravelBud Logo"
           width={250}
           height={80}
@@ -78,11 +84,7 @@ export default function OtpVerificationBox({
 
         {/* Resend Button */}
         <div className="flex justify-end mb-6">
-          <Button
-            onClick={onResend}
-           
-            className="text-primary"
-          >
+          <Button onClick={onResend} className="text-primary">
             Resend
           </Button>
         </div>

@@ -1,22 +1,17 @@
+'use client';
+
 import { Home, Users, DollarSign, CheckCircle } from 'lucide-react';
 import Image from 'next/image';
 import PrimaryButton from '@/components/PrimaryButton';
-import LaunchNotice from '@/components/LaunchNotice';
-import journey from '@/assets/images/journeys.png';
-import gateway from '@/assets/images/gateway.png';
-import paradise from '@/assets/images/paradise.png';
-import inspiration from '@/assets/images/inspiration.png';
-import cars from '@/assets/images/cars.png';
-import contact_us from '@/assets/images/contact_us.png';
 import '@/app/globals.css';
 
 export default function HomePage() {
   const offerings = [
-    { img: journey, text: 'Your Passport to Memorable Journeys' },
-    { img: paradise, text: 'For Travellers, Find Your Perfect Getaway' },
-    { img: gateway, text: 'For Hosts, Share Your Slice of Paradise' },
-    { img: inspiration, text: 'Curate travel stories, tips, and inspiration' },
-    { img: cars, text: 'Explore Hidden Gems Across India' },
+    { src: '/images/journeys.png', text: 'Your Passport to Memorable Journeys' },
+    { src: '/images/paradise.png', text: 'For Travellers, Find Your Perfect Getaway' },
+    { src: '/images/gateway.png', text: 'For Hosts, Share Your Slice of Paradise' },
+    { src: '/images/inspiration.png', text: 'Curate travel stories, tips, and inspiration' },
+    { src: '/images/cars.png', text: 'Explore Hidden Gems Across India' },
   ];
 
   return (
@@ -84,20 +79,32 @@ export default function HomePage() {
       {/* Offerings Coming Soon */}
       <section className="py-20">
         <div className="max-w-6xl mx-auto px-4 text-center">
-          <h2 className="text-3xl text-primary mb-10">TravelBud Offerings Coming soon!</h2>
+          <h2 className="text-3xl text-primary mb-10">TravelBud Offerings Coming Soon!</h2>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
             {offerings.slice(0, 4).map((item, idx) => (
               <div key={idx} className="text-center">
                 <div className="rounded-xl overflow-hidden shadow">
-                  <Image src={item.img} alt={item.text} className="w-full h-auto" placeholder="blur" />
+                  <Image
+                    src={item.src}
+                    alt={item.text}
+                    width={400}
+                    height={300}
+                    className="w-full h-auto"
+                  />
                 </div>
                 <p className="mt-4">{item.text}</p>
               </div>
             ))}
             <div className="sm:col-span-2 md:col-span-4 text-center">
               <div className="inline-block rounded-xl overflow-hidden shadow w-1/2">
-                <Image src={offerings[4].img} alt={offerings[4].text} className="w-full h-auto" placeholder="blur" />
+                <Image
+                  src={offerings[4].src}
+                  alt={offerings[4].text}
+                  width={500}
+                  height={350}
+                  className="w-full h-auto"
+                />
               </div>
               <p className="mt-4">{offerings[4].text}</p>
             </div>
@@ -128,7 +135,13 @@ export default function HomePage() {
         <div className="max-w-5xl mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-2 items-center bg-secondary rounded-3xl p-6 md:p-10 gap-6">
             <div className="rounded-3xl overflow-hidden">
-              <Image src={contact_us} alt="contact" className="rounded-3xl w-full h-auto" placeholder="blur" />
+              <Image
+                src="/images/contact_us.png"
+                alt="Contact Us"
+                width={600}
+                height={400}
+                className="rounded-3xl w-full h-auto"
+              />
             </div>
             <div className="text-center md:text-left">
               <p className="text-lg mb-2 text-heading">For any queries reach out to us at</p>
