@@ -2,46 +2,33 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { useDispatch } from 'react-redux';
+import { setUser } from '@/store/slices/authSlice'; // Update path if needed
+import API from '@/lib/axios';
+import { validateEmail, validatePassword, handleInputBlur } from '@/lib/validators';
 import FormInput from '@/components/FormInput';
 import GoogleLoginButton from '@/components/GoogleLoginButton';
 import PrimaryButton from '@/components/PrimaryButton';
 import PasswordInput from '@/components/ui/PasswordInput';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/store';
+
 
 export default function LoginForm() {
+  const dispatch = useDispatch();
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
   const [touched, setTouched] = useState<{ email?: boolean; password?: boolean }>({});
+  const [message, setMessage] = useState<string | null>(null);
+  const reduxUser = useSelector((state: RootState) => state.auth.user);
+  const reduxToken = useSelector((state: RootState) => state.auth.token);
+console.log('✅ Redux user value:', reduxUser);
+console.log('Redux after dispatch – token:', reduxToken);
+  
 
-  const validateEmail = (email: string): string | undefined => {
-    if (!email.trim()) return 'Email is required.';
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) return 'Enter a valid email address.';
-    return undefined;
-  };
-
-  const validatePassword = (password: string): string | undefined => {
-    if (!password.trim()) return 'Password is required.';
-    if (password.length < 8) return 'Password must be at least 8 characters.';
-    if (!/\d/.test(password)) return 'Password must include at least one number.';
-    if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) {
-      return 'Password must include a special character.';
-    }
-    return undefined;
-  };
-
-  const handleBlur = (field: 'email' | 'password') => {
-    setTouched((prev) => ({ ...prev, [field]: true }));
-
-    if (field === 'email') {
-      setErrors((prev) => ({ ...prev, email: validateEmail(email) }));
-    } else if (field === 'password') {
-      setErrors((prev) => ({ ...prev, password: validatePassword(password) }));
-    }
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     const emailError = validateEmail(email);
@@ -50,8 +37,26 @@ export default function LoginForm() {
     setTouched({ email: true, password: true });
     setErrors({ email: emailError, password: passwordError });
 
-    if (!emailError && !passwordError) {
-      console.log('Login:', { email, password });
+    if (emailError || passwordError) return;
+
+    try {
+      const res = await API.post('/user/login', { email, password });
+      const user = res.data.data;
+
+      // ✅ Save to localStorage
+      localStorage.setItem('token', user.token);
+      localStorage.setItem('user', JSON.stringify(user));
+
+      console.log('Dispatching user:', user)
+      // ✅ Save to Redux
+      dispatch(setUser({ user, token: user.token }));
+
+      setMessage(`Welcome, ${user.name}`);
+      console.log('Login Success:', user);
+    } catch (err: any) {
+      console.error('Login Error:', err);
+      const errorMessage = err?.response?.data?.message || 'Something went wrong.';
+      setMessage(errorMessage);
     }
   };
 
@@ -64,9 +69,10 @@ export default function LoginForm() {
           placeholder="Enter your email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          onBlur={() => handleBlur('email')}
+          onBlur={() =>
+            handleInputBlur({ field: 'email', email, password, setTouched, setErrors })
+          }
           error={touched.email ? errors.email : undefined}
- 
         />
 
         <PasswordInput
@@ -74,9 +80,10 @@ export default function LoginForm() {
           placeholder="Enter your password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          onBlur={() => handleBlur('password')}
+          onBlur={() =>
+            handleInputBlur({ field: 'password', email, password, setTouched, setErrors })
+          }
           error={touched.password ? errors.password : undefined}
-      
         />
 
         <div className="flex items-center justify-end">
@@ -88,6 +95,10 @@ export default function LoginForm() {
         <PrimaryButton type="submit" className="w-full">
           Log in
         </PrimaryButton>
+
+        {message && (
+          <div className="text-sm text-center text-accent font-medium">{message}</div>
+        )}
 
         <div className="relative">
           <div className="absolute inset-0 flex items-center">

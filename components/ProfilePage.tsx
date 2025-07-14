@@ -1,163 +1,174 @@
 'use client';
 
 import { useState } from 'react';
-import { User, Edit3, Phone, Mail, LogOut, HelpCircle, FileText, Shield } from 'lucide-react';
+import { useSelector, useDispatch } from 'react-redux';
+import { RootState } from '@/store';
+import { logout } from '@/store/slices/authSlice';
+import {
+  Edit3,
+  Phone,
+  FileText,
+  HelpCircle,
+  MessageSquare,
+  Shield,
+  Info,
+  LogOut,
+} from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 export default function ProfilePage() {
-  const [activeTab, setActiveTab] = useState<'traveling' | 'hosting'>('traveling');
-  const [bio, setBio] = useState("I love exploring new cultures and meeting people from around the world. Currently working as a software developer and passionate about sustainable travel.");
+  const dispatch = useDispatch();
+  const [tab, setTab] = useState<'traveling' | 'hosting'>('traveling');
+  const user = useSelector((state: RootState) => state.auth.user);
+
+  const supportItems = [
+    { label: 'Contact us or Feedback', icon: Phone },
+    { label: 'Terms & Conditions', icon: FileText },
+    { label: 'FAQs', icon: HelpCircle },
+    { label: 'Cancellation & Refund', icon: MessageSquare },
+    { label: 'Legal & Privacy', icon: Shield },
+    { label: 'About us', icon: Info },
+  ];
+
+  const handleLogout = () => {
+    dispatch(logout());
+    localStorage.clear();
+  };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* User Info Card */}
-        <div className="bg-white rounded-2xl shadow-sm p-8 mb-8">
-          <div className="flex flex-col md:flex-row items-center md:items-start space-y-4 md:space-y-0 md:space-x-6">
-            <div className="w-24 h-24 bg-blue-100 rounded-full flex items-center justify-center">
-              <User className="w-12 h-12 text-blue-600" />
-            </div>
-            <div className="text-center md:text-left flex-1">
-              <h1 className="text-2xl font-bold text-gray-900 mb-2">John Doe</h1>
-              <div className="flex flex-col md:flex-row gap-4 text-gray-600 mb-4">
-                <div className="flex items-center justify-center md:justify-start">
-                  <Mail className="w-4 h-4 mr-2" />
-                  john.doe@example.com
-                </div>
-                <div className="flex items-center justify-center md:justify-start">
-                  <Phone className="w-4 h-4 mr-2" />
-                  +91 98765 43210
-                </div>
-              </div>
-              <button className="inline-flex items-center text-blue-600 hover:text-blue-700 font-medium">
-                <Edit3 className="w-4 h-4 mr-2" />
-                Edit Profile
-              </button>
-            </div>
-          </div>
-        </div>
+    <div className="min-h-screen bg-white py-10 px-4 sm:px-8 max-w-5xl mx-auto">
 
-        {/* Traveling/Hosting Toggle */}
-        <div className="bg-white rounded-2xl shadow-sm p-6 mb-8">
-          <div className="flex justify-center mb-6">
-            <div className="bg-gray-100 p-1 rounded-lg">
-              <button
-                onClick={() => setActiveTab('traveling')}
-                className={`px-6 py-2 rounded-md font-medium transition-colors ${
-                  activeTab === 'traveling'
-                    ? 'bg-blue-600 text-white'
-                    : 'text-gray-600 hover:text-gray-900'
-                }`}
-              >
-                Traveling
-              </button>
-              <button
-                onClick={() => setActiveTab('hosting')}
-                className={`px-6 py-2 rounded-md font-medium transition-colors ${
-                  activeTab === 'hosting'
-                    ? 'bg-blue-600 text-white'
-                    : 'text-gray-600 hover:text-gray-900'
-                }`}
-              >
-                Hosting
-              </button>
-            </div>
-          </div>
-
-          {activeTab === 'traveling' && (
-            <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Travel Preferences</h3>
-              <p className="text-gray-600 mb-4">
-                You haven&rsquo;t booked any trips yet. Start exploring amazing homestays around the world!
-              </p>
-              <button className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg transition-colors">
-                Browse Stays
-              </button>
-            </div>
-          )}
-
-          {activeTab === 'hosting' && (
-            <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Hosting Dashboard</h3>
-              <p className="text-gray-600 mb-4">
-                Ready to welcome guests? Start by creating your first listing.
-              </p>
-              <button className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg transition-colors">
-                Create Listing
-              </button>
-            </div>
-          )}
-        </div>
-
-        {/* Bio Section */}
-        <div className="bg-white rounded-2xl shadow-sm p-6 mb-8">
-          <div className="flex justify-between items-center mb-4">
-            <h3 className="text-lg font-semibold text-gray-900">More about me</h3>
-            <button className="text-blue-600 hover:text-blue-700 font-medium">
-              Edit
-            </button>
-          </div>
-          <p className="text-gray-600 mb-4">{bio}</p>
-          
-          <div className="mb-4">
-            <h4 className="font-medium text-gray-900 mb-2">Favorite Movies</h4>
-            <div className="flex flex-wrap gap-2">
-              <span className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm">The Shawshank Redemption</span>
-              <span className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm">Inception</span>
-              <span className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm">Pulp Fiction</span>
-            </div>
-          </div>
-          
-          <button className="text-blue-600 hover:text-blue-700 font-medium">
-            View All →
-          </button>
-        </div>
-
-        {/* Support Links */}
-        <div className="bg-white rounded-2xl shadow-sm p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-6">Support & Settings</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <button className="flex items-center p-4 rounded-lg hover:bg-gray-50 transition-colors text-left">
-              <HelpCircle className="w-5 h-5 text-gray-500 mr-3" />
-              <div>
-                <div className="font-medium text-gray-900">Contact Support</div>
-                <div className="text-sm text-gray-500">Get help with your account</div>
-              </div>
-            </button>
+      {/* Toggle Tabs */}
+      <div className="flex justify-center mb-10">
+        <div className="flex bg-gray-200 rounded-full overflow-hidden">
+          <Button
             
-            <button className="flex items-center p-4 rounded-lg hover:bg-gray-50 transition-colors text-left">
-              <HelpCircle className="w-5 h-5 text-gray-500 mr-3" />
-              <div>
-                <div className="font-medium text-gray-900">FAQs</div>
-                <div className="text-sm text-gray-500">Find answers to common questions</div>
-              </div>
-            </button>
+            className={`px-6 py-1 rounded-full text-sm font-medium ${
+              tab === 'traveling' ? 'bg-primary text-white' : 'text-gray-600'
+            }`}
+            onClick={() => setTab('traveling')}
+          >
+            Traveling
+          </Button>
+          <Button
             
-            <button className="flex items-center p-4 rounded-lg hover:bg-gray-50 transition-colors text-left">
-              <FileText className="w-5 h-5 text-gray-500 mr-3" />
-              <div>
-                <div className="font-medium text-gray-900">Terms of Service</div>
-                <div className="text-sm text-gray-500">Review our terms</div>
-              </div>
-            </button>
-            
-            <button className="flex items-center p-4 rounded-lg hover:bg-gray-50 transition-colors text-left">
-              <Shield className="w-5 h-5 text-gray-500 mr-3" />
-              <div>
-                <div className="font-medium text-gray-900">Privacy Policy</div>
-                <div className="text-sm text-gray-500">How we protect your data</div>
-              </div>
-            </button>
-            
-            <button className="flex items-center p-4 rounded-lg hover:bg-gray-50 transition-colors text-left text-red-600 md:col-span-2">
-              <LogOut className="w-5 h-5 mr-3" />
-              <div>
-                <div className="font-medium">Logout</div>
-                <div className="text-sm text-red-500">Sign out of your account</div>
-              </div>
-            </button>
-          </div>
+            className={`px-6 py-1 rounded-full text-sm font-medium ${
+              tab === 'hosting' ? 'bg-primary text-white' : 'text-gray-600'
+            }`}
+            onClick={() => setTab('hosting')}
+          >
+            Hosting
+          </Button>
         </div>
       </div>
+
+      {/* Personal Info */}
+      <section className="bg-white rounded-xl p-6 relative mb-6">
+        <h2 className="text-lg text-black mb-6">Personal Information</h2>
+        <button className="absolute top-6 right-6 text-primary hover:text-blue-700">
+          <Edit3 className="w-4 h-4" />
+        </button>
+        <div className="flex flex-col md:flex-row gap-6 items-start">
+          <div className="w-24 h-24 bg-secondary rounded-full flex items-center justify-center text-primary text-3xl">
+            👤
+          </div>
+          <div className="flex-1 space-y-3 text-sm">
+            <div>
+              <p className="text-text font-medium">Name</p>
+              <p className="text-black">{user?.name}</p>
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
+              <div>
+                <p className="text-text font-medium">Mobile No.</p>
+                <p className="text-black">{user?.phone_number || 'Not Added'}</p>
+              </div>
+              {user?.isMobileVerified ? (
+                <span className="px-2 py-0.5 text-xs rounded-full bg-blue-100 text-primary">Verified</span>
+              ) : (
+                <>
+                  <span className="px-2 py-0.5 text-xs rounded-full bg-red-100 text-red-500">Not Verified</span>
+                  <button className="text-primary text-xs font-medium underline">Verify</button>
+                </>
+              )}
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
+              <div>
+                <p className="text-text font-medium">Email</p>
+                <p className="text-black">{user?.email}</p>
+              </div>
+              <span className="px-2 py-0.5 text-xs rounded-full bg-blue-100 text-primary">Verified</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Bio Section */}
+      <section className="bg-white rounded-xl p-6 relative mb-6">
+        <div className="flex justify-between items-start mb-4">
+          <h2 className="text-lg  text-black">Bio Details</h2>
+          <button className="text-primary hover:text-blue-700">
+            <Edit3 className="w-4 h-4" />
+          </button>
+        </div>
+        <div className="space-y-5 text-sm text-text">
+          <div>
+            <p className="text-xs text-accent mb-1">More about me</p>
+            <p className="text-black leading-relaxed">
+              {user?.bio || 'Tell us more about yourself...'}
+            </p>
+          </div>
+          <div>
+            <p className="text-xs text-accent mb-1">Favorite Movies/TV shows</p>
+            <p className="text-black">Hanuman, Vincenzo, Start-Up</p>
+          </div>
+          <Button  className="p-0 text-primary text-sm">
+            View all
+          </Button>
+        </div>
+      </section>
+
+      {/* ID Verification */}
+      <section className="bg-white rounded-xl p-6 mb-8">
+        <div className="flex justify-between items-start mb-4">
+          <h2 className="text-lg  text-gray-800">Identity Verification (Hosts only)</h2>
+          <Edit3 className="text-gray-400 cursor-pointer hover:text-gray-600" />
+        </div>
+        <div className="grid grid-cols-2 text-sm text-gray-700 gap-4">
+          <div>
+            <p className="text-accent">ID Type</p>
+            <p className="text-gray-800">Not Uploaded</p>
+          </div>
+          <div>
+            <p className="text-accent">ID Verification Status</p>
+            <p className="text-red-500">Not Verified</p>
+          </div>
+        </div>
+      </section>
+
+      {/* Support */}
+      <section className="bg-white rounded-xl p-6">
+        <h2 className="text-lg  text-black mb-6">Support</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {supportItems.map((item, idx) => (
+            <Button
+              key={idx}
+            
+              className="w-full justify-start flex items-center gap-3 text-text hover:bg-gray-50"
+            >
+              <item.icon className="w-4 h-4 text-primary" />
+              {item.label}
+            </Button>
+          ))}
+          <Button
+      
+            onClick={handleLogout}
+            className="w-full justify-start flex items-center gap-3 text-red-600 hover:bg-red-50"
+          >
+            <LogOut className="w-4 h-4 text-red-500" />
+            Logout
+          </Button>
+        </div>
+      </section>
     </div>
   );
 }
