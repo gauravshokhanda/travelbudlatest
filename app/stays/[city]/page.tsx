@@ -1,7 +1,7 @@
-import React from 'react'
-
-export const page = () => {
+export default function PropertyPage({ params }: { params: { id: string } }) {
   return (
-    <div>page</div>
-  )
+    <div>
+      city: {params.id}
+    </div>
+  );
 }
