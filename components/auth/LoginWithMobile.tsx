@@ -1,23 +1,24 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import Link from 'next/link';
-import PrimaryButton from '@/components/PrimaryButton';
-import GoogleLoginButton from '@/components/GoogleLoginButton';
+import { useState } from "react";
+import Link from "next/link";
+import PrimaryButton from "@/components/PrimaryButton";
+import GoogleLoginButton from "@/components/GoogleLoginButton";
 
 interface Props {
   onLoginClick: () => void;
 }
 
 export default function LoginWithMobile({ onLoginClick }: Props) {
-  const [mobile, setMobile] = useState('');
+  const [mobile, setMobile] = useState("");
   const [error, setError] = useState<string | undefined>(undefined);
   const [touched, setTouched] = useState(false);
 
   const validateMobile = (number: string): string | undefined => {
-    if (!number.trim()) return 'Mobile number is required.';
+    if (!number.trim()) return "Mobile number is required.";
     const mobileRegex = /^[6-9]\d{9}$/;
-    if (!mobileRegex.test(number)) return 'Please enter a valid 10-digit mobile number.';
+    if (!mobileRegex.test(number))
+      return "Please enter a valid 10-digit mobile number.";
     return undefined;
   };
 
@@ -53,7 +54,9 @@ export default function LoginWithMobile({ onLoginClick }: Props) {
             onBlur={handleBlur}
             maxLength={10}
             placeholder="Enter 10-digit mobile number"
-            className={`w-full px-4 py-3 outline-none focus:ring-0 focus:outline-none ${error ? 'border-red-500' : ''}`}
+            className={`w-full px-4 py-3 outline-none focus:ring-0 focus:outline-none ${
+              error ? "border-red-500" : ""
+            }`}
           />
         </div>
         {touched && error && (
@@ -75,13 +78,13 @@ export default function LoginWithMobile({ onLoginClick }: Props) {
       </div>
 
       <GoogleLoginButton />
-
+      {/* 
       <p className="text-center text-sm text-gray-600 mt-5">
         Don&rsquo;t have an account?{' '}
         <Link href="/register" className="text-[#1b88d7] font-medium">
           Sign up
         </Link>
-      </p>
+      </p> */}
     </div>
   );
 }

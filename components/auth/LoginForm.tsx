@@ -1,32 +1,39 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import Link from 'next/link';
-import { useDispatch } from 'react-redux';
-import { setUser } from '@/store/slices/authSlice'; // Update path if needed
-import API from '@/lib/axios';
-import { validateEmail, validatePassword, handleInputBlur } from '@/lib/validators';
-import FormInput from '@/components/FormInput';
-import GoogleLoginButton from '@/components/GoogleLoginButton';
-import PrimaryButton from '@/components/PrimaryButton';
-import PasswordInput from '@/components/ui/PasswordInput';
-import { useSelector } from 'react-redux';
-import { RootState } from '@/store';
-
+import { useState } from "react";
+import Link from "next/link";
+import { useDispatch } from "react-redux";
+import { setUser } from "@/store/slices/authSlice"; // Update path if needed
+import API from "@/lib/axios";
+import {
+  validateEmail,
+  validatePassword,
+  handleInputBlur,
+} from "@/lib/validators";
+import FormInput from "@/components/FormInput";
+import GoogleLoginButton from "@/components/GoogleLoginButton";
+import PrimaryButton from "@/components/PrimaryButton";
+import PasswordInput from "@/components/ui/PasswordInput";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store";
 
 export default function LoginForm() {
   const dispatch = useDispatch();
 
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
-  const [touched, setTouched] = useState<{ email?: boolean; password?: boolean }>({});
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [errors, setErrors] = useState<{ email?: string; password?: string }>(
+    {}
+  );
+  const [touched, setTouched] = useState<{
+    email?: boolean;
+    password?: boolean;
+  }>({});
   const [message, setMessage] = useState<string | null>(null);
   const reduxUser = useSelector((state: RootState) => state.auth.user);
   const reduxToken = useSelector((state: RootState) => state.auth.token);
-console.log('✅ Redux user value:', reduxUser);
-console.log('Redux after dispatch – token:', reduxToken);
-  
+  console.log("✅ Redux user value:", reduxUser);
+  console.log("Redux after dispatch – token:", reduxToken);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -40,22 +47,23 @@ console.log('Redux after dispatch – token:', reduxToken);
     if (emailError || passwordError) return;
 
     try {
-      const res = await API.post('/user/login', { email, password });
+      const res = await API.post("/user/login", { email, password });
       const user = res.data.data;
 
       // ✅ Save to localStorage
-      localStorage.setItem('token', user.token);
-      localStorage.setItem('user', JSON.stringify(user));
+      localStorage.setItem("token", user.token);
+      localStorage.setItem("user", JSON.stringify(user));
 
-      console.log('Dispatching user:', user)
+      console.log("Dispatching user:", user);
       // ✅ Save to Redux
       dispatch(setUser({ user, token: user.token }));
 
       setMessage(`Welcome, ${user.name}`);
-      console.log('Login Success:', user);
+      console.log("Login Success:", user);
     } catch (err: any) {
-      console.error('Login Error:', err);
-      const errorMessage = err?.response?.data?.message || 'Something went wrong.';
+      console.error("Login Error:", err);
+      const errorMessage =
+        err?.response?.data?.message || "Something went wrong.";
       setMessage(errorMessage);
     }
   };
@@ -70,7 +78,13 @@ console.log('Redux after dispatch – token:', reduxToken);
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           onBlur={() =>
-            handleInputBlur({ field: 'email', email, password, setTouched, setErrors })
+            handleInputBlur({
+              field: "email",
+              email,
+              password,
+              setTouched,
+              setErrors,
+            })
           }
           error={touched.email ? errors.email : undefined}
         />
@@ -81,7 +95,13 @@ console.log('Redux after dispatch – token:', reduxToken);
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           onBlur={() =>
-            handleInputBlur({ field: 'password', email, password, setTouched, setErrors })
+            handleInputBlur({
+              field: "password",
+              email,
+              password,
+              setTouched,
+              setErrors,
+            })
           }
           error={touched.password ? errors.password : undefined}
         />
@@ -97,7 +117,9 @@ console.log('Redux after dispatch – token:', reduxToken);
         </PrimaryButton>
 
         {message && (
-          <div className="text-sm text-center text-accent font-medium">{message}</div>
+          <div className="text-sm text-center text-accent font-medium">
+            {message}
+          </div>
         )}
 
         <div className="relative">
@@ -110,13 +132,6 @@ console.log('Redux after dispatch – token:', reduxToken);
         </div>
 
         <GoogleLoginButton />
-
-        <p className="text-center text-sm text-gray-600">
-          Don&rsquo;t have an account?{' '}
-          <Link href="/register" className="text-primary font-medium">
-            Sign up
-          </Link>
-        </p>
       </form>
     </div>
   );
