@@ -1,15 +1,9 @@
 // app/property/[id]/page.tsx
 
-interface PageProps {
-  params: {
-    id: string;
-  };
-}
+type Props = {
+  params: { id: string };
+};
 
-export default function PropertyPage({ params }: PageProps) {
-  return (
-    <div>
-      Property ID: {params.id}
-    </div>
-  );
+export default function PropertyPage({ params }: Props) {
+  return <div>Property ID: {params.id}</div>;
 }
