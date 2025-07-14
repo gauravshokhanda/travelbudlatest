@@ -1,15 +1,13 @@
-// app/property/[id]/page.tsx
-
 interface PageProps {
   params: {
-    id: string;
+    city: string;
   };
 }
 
-export default function PropertyPage({ params }: PageProps) {
+export default function StaysPage({ params }: PageProps) {
   return (
     <div>
-     City: {params.id}
+      City: {params.city}
     </div>
   );
 }
