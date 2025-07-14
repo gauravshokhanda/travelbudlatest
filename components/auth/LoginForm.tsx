@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useDispatch } from "react-redux";
-import { setUser } from "@/store/slices/authSlice"; // Update path if needed
+import { setUser } from "@/store/slices/authSlice";
 import API from "@/lib/axios";
 import {
   validateEmail,

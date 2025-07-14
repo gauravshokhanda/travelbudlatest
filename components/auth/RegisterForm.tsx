@@ -6,7 +6,6 @@ import Image from 'next/image';
 import FormInput from '@/components/FormInput';
 import GoogleLoginButton from '@/components/GoogleLoginButton';
 import PrimaryButton from '@/components/PrimaryButton';
-import TravelBudLogo from '/public/images/TravelBud.png';
 
 export default function RegisterForm() {
   const [formData, setFormData] = useState({
@@ -33,11 +32,11 @@ export default function RegisterForm() {
     <div className="w-full max-w-md mx-auto px-4">
       <div className="text-center mb-8">
         <Image
-          src={TravelBudLogo}
+          src="/images/TravelBud.png"
           alt="TravelBud Logo"
           width={140}
           height={40}
-          className="mx-auto mb-2"
+          priority
         />
         <h2 className="text-2xl font-bold text-black mb-4">Create Account</h2>
       </div>

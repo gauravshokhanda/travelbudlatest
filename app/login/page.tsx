@@ -34,8 +34,8 @@ export default function LoginPage() {
               <Image
                 src="/images/TravelBud.png"
                 alt="TravelBud Logo"
-                width={140}
-                height={40}
+                width={250}
+                height={100}
                 priority
               />
 
@@ -85,10 +85,10 @@ export default function LoginPage() {
               height={140}
               className="mb-4"
             />
-            <h3 className="text-lg font-semibold mt-2 text-heading">
+            <h3 className="text-lg mt-2 text-black">
               Search perfect stays!
             </h3>
-            <p className="text-text mt-1 max-w-xs text-sm">
+            <p className="text-accent mt-1 max-w-xs text-sm">
               Search the best stays and capture your favorite moments.
             </p>
           </div>
@@ -101,10 +101,10 @@ export default function LoginPage() {
               height={140}
               className="mb-4"
             />
-            <h3 className="text-lg font-semibold mt-2 text-heading">
+            <h3 className="text-lg font-semibold mt-2 text-black">
               List your property
             </h3>
-            <p className="text-text mt-1 max-w-xs text-sm">
+            <p className="text-accent mt-1 max-w-xs text-sm">
               List your property to earn and welcome travelers across the world.
             </p>
           </div>
