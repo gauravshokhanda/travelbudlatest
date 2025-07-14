@@ -7,3 +7,11 @@
   --color-accent: #727578;
   --color-black: #111;
 }
+@font-face {
+  font-family: 'Poppins';
+  src: url('/font/Poppins-Medium.ttf') format('truetype');
+}
+
+html {
+  font-family: 'Poppins', sans-serif;
+}

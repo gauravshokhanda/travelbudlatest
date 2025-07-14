@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import { useState, useRef , useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import PrimaryButton from '@/components/PrimaryButton';
 import SecondaryButton from '@/components/SecondaryButton';
 import { Button } from '@/components/ui/button';
@@ -23,11 +23,11 @@ export default function OtpVerificationBox({
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const [hasMounted, setHasMounted] = useState(false);
 
-useEffect(() => {
-  setHasMounted(true);
-}, []);
+  useEffect(() => {
+    setHasMounted(true);
+  }, []);
 
-if (!hasMounted) return null;
+  if (!hasMounted) return null;
 
   const handleChange = (index: number, value: string) => {
     if (/^\d?$/.test(value)) {
@@ -72,7 +72,9 @@ if (!hasMounted) return null;
           {otp.map((digit, index) => (
             <input
               key={index}
-              ref={(el) => (inputRefs.current[index] = el)}
+              ref={(el: HTMLInputElement | null) => {
+                inputRefs.current[index] = el;
+              }}
               maxLength={1}
               value={digit}
               onChange={(e) => handleChange(index, e.target.value)}

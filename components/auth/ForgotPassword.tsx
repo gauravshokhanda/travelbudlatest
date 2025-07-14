@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import PrimaryButton from '@/components/PrimaryButton';
 import { Input } from '@/components/ui/input';
-import ResendOtpModal from '@/components/auth/ResendOtpModal';
 
 interface Props {
   onSubmit?: (email: string) => void;
@@ -13,29 +12,18 @@ interface Props {
 
 export default function ForgotPassword({ onSubmit, onCancel }: Props) {
   const [email, setEmail] = useState('');
-  const [showModal, setShowModal] = useState(false);
   const [hasMounted, setHasMounted] = useState(false);
 
   useEffect(() => {
     setHasMounted(true);
   }, []);
 
-  const handleResend = () => {
-    console.log('Verification code resent!');
-    setShowModal(false);
-  };
-
-  const handleReset = () => {
-    if (email.trim()) {
-      onSubmit?.(email);
-    }
-  };
-
   if (!hasMounted) return null;
 
   return (
     <div className="w-full h-full flex flex-col items-center justify-between px-6 py-10">
       <div className="w-full max-w-lg flex-1 flex flex-col">
+        {/* Logo */}
         <Image
           src="/images/TravelBud.png"
           alt="TravelBud Logo"
@@ -44,6 +32,7 @@ export default function ForgotPassword({ onSubmit, onCancel }: Props) {
           className="mx-auto mb-8"
         />
 
+        {/* Title */}
         <h2 className="text-4xl font-bold text-black font-poppins text-center mb-6">
           Forgot password
         </h2>
@@ -51,6 +40,7 @@ export default function ForgotPassword({ onSubmit, onCancel }: Props) {
           Provide your account&apos;s email for which you want to reset your password
         </p>
 
+        {/* Email Input */}
         <div className="mb-8">
           <label
             htmlFor="email"
@@ -68,21 +58,16 @@ export default function ForgotPassword({ onSubmit, onCancel }: Props) {
           />
         </div>
 
+        {/* Buttons */}
         <div className="flex gap-6 mt-auto">
           <PrimaryButton outline className="flex-1" onClick={onCancel}>
             Cancel
           </PrimaryButton>
-          <PrimaryButton className="flex-1" onClick={() => setShowModal(true)}>
+          <PrimaryButton className="flex-1" onClick={() => {}}>
             Reset
           </PrimaryButton>
         </div>
       </div>
-
-      <ResendOtpModal
-        open={showModal}
-        onClose={() => setShowModal(false)}
-        onResend={handleResend}
-      />
     </div>
   );
 }
