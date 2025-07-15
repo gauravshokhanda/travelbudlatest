@@ -9,6 +9,16 @@ import GoogleLoginButton from '@/components/GoogleLoginButton';
 import PrimaryButton from '@/components/PrimaryButton';
 import API from '@/lib/axios';
 
+import {
+  validateEmail,
+  validatePassword,
+  validateMobile,
+  validateFullName,
+  validateConfirmEmail,
+  validateConfirmPassword,
+  handleInputBlur
+} from '@/lib/validators';
+
 export default function RegisterForm() {
   const [formData, setFormData] = useState({
     fullName: '',
@@ -20,17 +30,35 @@ export default function RegisterForm() {
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
   const [message, setMessage] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Optional: Basic frontend validation
-    if (
-      formData.email !== formData.confirmEmail ||
-      formData.password !== formData.confirmPassword
-    ) {
-      setMessage('Email or password confirmation does not match');
+    // Final validation check before submit
+    const finalErrors: Record<string, string> = {
+      fullName: validateFullName(formData.fullName) || '',
+      mobile: validateMobile(formData.mobileNumber) || '',
+      email: validateEmail(formData.email) || '',
+      confirmEmail: validateConfirmEmail(formData.email, formData.confirmEmail) || '',
+      password: validatePassword(formData.password) || '',
+      confirmPassword: validateConfirmPassword(formData.password, formData.confirmPassword) || '',
+    };
+
+    setErrors(finalErrors);
+    setTouched({
+      fullName: true,
+      mobile: true,
+      email: true,
+      confirmEmail: true,
+      password: true,
+      confirmPassword: true,
+    });
+
+    const hasError = Object.values(finalErrors).some((err) => err !== '');
+    if (hasError) {
+      setMessage('Please fix the highlighted errors.');
       return;
     }
 
@@ -43,7 +71,6 @@ export default function RegisterForm() {
       };
 
       const response = await API.post('/user/register', payload);
-
       console.log('✅ Registration Success:', response.data);
       setMessage('Registration successful!');
     } catch (error: any) {
@@ -58,7 +85,7 @@ export default function RegisterForm() {
 
   return (
     <div className="w-full max-w-md h-full flex flex-col">
-      {/* Fixed logo + heading */}
+      {/* Logo & Heading */}
       <div className="flex flex-col items-center mb-4 shrink-0">
         <Image
           src="/images/TravelBud.png"
@@ -70,7 +97,7 @@ export default function RegisterForm() {
         <h2 className="text-3xl font-bold text-black mt-6 mb-2">Create Account</h2>
       </div>
 
-      {/* Scrollable form section only */}
+      {/* Scrollable form */}
       <div className="overflow-y-auto scrollbar-hide flex-grow pr-1">
         <form onSubmit={handleSubmit} className="space-y-5" autoComplete="off">
           <FormInput
@@ -78,7 +105,14 @@ export default function RegisterForm() {
             placeholder="Enter full name"
             value={formData.fullName}
             onChange={(e) => handleChange('fullName', e.target.value)}
-            error={errors.fullName}
+            onBlur={() => {
+              setTouched((prev) => ({ ...prev, fullName: true }));
+              setErrors((prev) => ({
+                ...prev,
+                fullName: validateFullName(formData.fullName) || '',
+              }));
+            }}
+            error={touched.fullName ? errors.fullName : undefined}
           />
 
           <FormInput
@@ -87,7 +121,15 @@ export default function RegisterForm() {
             prefix="+91"
             value={formData.mobileNumber}
             onChange={(e) => handleChange('mobileNumber', e.target.value)}
-            error={errors.mobileNumber}
+            onBlur={() =>
+              handleInputBlur({
+                field: 'mobile',
+                mobile: formData.mobileNumber,
+                setTouched,
+                setErrors,
+              })
+            }
+            error={touched.mobile ? errors.mobile : undefined}
           />
 
           <FormInput
@@ -96,7 +138,15 @@ export default function RegisterForm() {
             placeholder="Enter email"
             value={formData.email}
             onChange={(e) => handleChange('email', e.target.value)}
-            error={errors.email}
+            onBlur={() =>
+              handleInputBlur({
+                field: 'email',
+                email: formData.email,
+                setTouched,
+                setErrors,
+              })
+            }
+            error={touched.email ? errors.email : undefined}
           />
 
           <FormInput
@@ -105,7 +155,14 @@ export default function RegisterForm() {
             placeholder="Enter confirm email"
             value={formData.confirmEmail}
             onChange={(e) => handleChange('confirmEmail', e.target.value)}
-            error={errors.confirmEmail}
+            onBlur={() => {
+              setTouched((prev) => ({ ...prev, confirmEmail: true }));
+              setErrors((prev) => ({
+                ...prev,
+                confirmEmail: validateConfirmEmail(formData.email, formData.confirmEmail) || '',
+              }));
+            }}
+            error={touched.confirmEmail ? errors.confirmEmail : undefined}
           />
 
           <PasswordInput
@@ -113,7 +170,15 @@ export default function RegisterForm() {
             placeholder="Enter password"
             value={formData.password}
             onChange={(e) => handleChange('password', e.target.value)}
-            error={errors.password}
+            onBlur={() =>
+              handleInputBlur({
+                field: 'password',
+                password: formData.password,
+                setTouched,
+                setErrors,
+              })
+            }
+            error={touched.password ? errors.password : undefined}
           />
 
           <PasswordInput
@@ -121,7 +186,17 @@ export default function RegisterForm() {
             placeholder="Enter confirm password"
             value={formData.confirmPassword}
             onChange={(e) => handleChange('confirmPassword', e.target.value)}
-            error={errors.confirmPassword}
+            onBlur={() => {
+              setTouched((prev) => ({ ...prev, confirmPassword: true }));
+              setErrors((prev) => ({
+                ...prev,
+                confirmPassword: validateConfirmPassword(
+                  formData.password,
+                  formData.confirmPassword
+                ) || '',
+              }));
+            }}
+            error={touched.confirmPassword ? errors.confirmPassword : undefined}
           />
 
           <PrimaryButton type="submit" className="w-full">

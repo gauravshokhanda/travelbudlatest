@@ -1,4 +1,5 @@
 // utils/validators.ts
+
 export const validateEmail = (email: string): string | undefined => {
   if (!email.trim()) return 'Email is required.';
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -16,15 +17,47 @@ export const validatePassword = (password: string): string | undefined => {
   return undefined;
 };
 
-export const validateMobile = (number: string): string | undefined => {
-  if (!number.trim()) return "Mobile number is required.";
-  const mobileRegex = /^[6-9]\d{9}$/;
-  if (!mobileRegex.test(number))
-    return "Please enter a valid 10-digit mobile number.";
+export const validateFullName = (name: string): string | undefined => {
+  if (!name.trim()) return 'Full name is required.';
+  if (name.length < 2) return 'Name must be at least 2 characters.';
   return undefined;
 };
 
-type Field = 'email' | 'password' | 'mobile';
+export const validateMobile = (number: string): string | undefined => {
+  if (!number.trim()) return 'Mobile number is required.';
+  const mobileRegex = /^[6-9]\d{9}$/;
+  if (!mobileRegex.test(number)) return 'Enter a valid 10-digit mobile number.';
+  return undefined;
+};
+
+// ✅ Confirm email matches
+export const validateConfirmEmail = (
+  email: string,
+  confirmEmail: string
+): string | undefined => {
+  if (!confirmEmail.trim()) return 'Please confirm your email.';
+  if (email !== confirmEmail) return 'Emails do not match.';
+  return undefined;
+};
+
+// ✅ Confirm password matches
+export const validateConfirmPassword = (
+  password: string,
+  confirmPassword: string
+): string | undefined => {
+  if (!confirmPassword.trim()) return 'Please confirm your password.';
+  if (password !== confirmPassword) return 'Passwords do not match.';
+  return undefined;
+};
+
+// ✅ Extended fields to include all
+type Field =
+  | 'email'
+  | 'password'
+  | 'mobile'
+  | 'fullName'
+  | 'confirmEmail'
+  | 'confirmPassword';
 
 interface HandleBlurProps {
   field: Field;
@@ -41,15 +74,30 @@ export const handleInputBlur = ({
   password,
   mobile,
   setTouched,
-  setErrors
+  setErrors,
 }: HandleBlurProps) => {
   setTouched((prev) => ({ ...prev, [field]: true }));
 
-  if (field === 'email' && email !== undefined) {
-    setErrors((prev) => ({ ...prev, email: validateEmail(email) }));
-  } else if (field === 'password' && password !== undefined) {
-    setErrors((prev) => ({ ...prev, password: validatePassword(password) }));
-  } else if (field === 'mobile' && mobile !== undefined) {
-    setErrors((prev) => ({ ...prev, mobile: validateMobile(mobile) }));
+  switch (field) {
+    case 'email':
+      if (email !== undefined) {
+        setErrors((prev) => ({ ...prev, email: validateEmail(email) }));
+      }
+      break;
+    case 'password':
+      if (password !== undefined) {
+        setErrors((prev) => ({ ...prev, password: validatePassword(password) }));
+      }
+      break;
+    case 'mobile':
+      if (mobile !== undefined) {
+        setErrors((prev) => ({ ...prev, mobile: validateMobile(mobile) }));
+      }
+      break;
+    case 'fullName':
+      setErrors((prev) => ({ ...prev, fullName: validateFullName(email || '') }));
+      break;
+    default:
+      break;
   }
 };
