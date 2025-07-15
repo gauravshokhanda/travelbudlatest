@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useDispatch } from "react-redux";
+import { useRouter } from "next/navigation";
+import { useDispatch, useSelector } from "react-redux";
 import { setUser } from "@/store/slices/authSlice";
 import API from "@/lib/axios";
 import {
@@ -14,24 +15,21 @@ import FormInput from "@/components/FormInput";
 import GoogleLoginButton from "@/components/GoogleLoginButton";
 import PrimaryButton from "@/components/PrimaryButton";
 import PasswordInput from "@/components/ui/PasswordInput";
-import { useSelector } from "react-redux";
 import { RootState } from "@/store";
 
 export default function LoginForm() {
+  const router = useRouter();
   const dispatch = useDispatch();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [errors, setErrors] = useState<{ email?: string; password?: string }>(
-    {}
-  );
-  const [touched, setTouched] = useState<{
-    email?: boolean;
-    password?: boolean;
-  }>({});
+  const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
+  const [touched, setTouched] = useState<{ email?: boolean; password?: boolean }>({});
   const [message, setMessage] = useState<string | null>(null);
+
   const reduxUser = useSelector((state: RootState) => state.auth.user);
   const reduxToken = useSelector((state: RootState) => state.auth.token);
+
   console.log("✅ Redux user value:", reduxUser);
   console.log("Redux after dispatch – token:", reduxToken);
 
@@ -50,16 +48,17 @@ export default function LoginForm() {
       const res = await API.post("/user/login", { email, password });
       const user = res.data.data;
 
-      // ✅ Save to localStorage
       localStorage.setItem("token", user.token);
       localStorage.setItem("user", JSON.stringify(user));
 
       console.log("Dispatching user:", user);
-      // ✅ Save to Redux
       dispatch(setUser({ user, token: user.token }));
 
       setMessage(`Welcome, ${user.name}`);
       console.log("Login Success:", user);
+
+      // Redirect after success
+      router.push("/profile");
     } catch (err: any) {
       console.error("Login Error:", err);
       const errorMessage =
@@ -107,7 +106,7 @@ export default function LoginForm() {
         />
 
         <div className="flex items-center justify-end">
-          <Link href="/forgot-password" className="text-sm text-primary">
+          <Link href="/login/forgotPassword" className="text-sm text-primary">
             Forgot password?
           </Link>
         </div>

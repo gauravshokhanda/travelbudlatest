@@ -15,3 +15,11 @@
 html {
   font-family: 'Poppins', sans-serif;
 }
+/* Hide scrollbar cross-browser */
+.scrollbar-hide {
+  scrollbar-width: none; 
+  -ms-overflow-style: none; 
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none; 
+}

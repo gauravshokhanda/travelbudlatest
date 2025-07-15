@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -18,16 +18,9 @@ export default function PasswordInput({
   ...props
 }: PasswordInputProps) {
   const [visible, setVisible] = useState(false);
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!mounted) return null;
 
   return (
-    <div className="mb-6 w-full">
+    <div className="mb-6 w-full px-1">
       {label && (
         <label className="block text-sm font-medium text-black mb-2">
           {label} {required && <span className="text-red-500">*</span>}

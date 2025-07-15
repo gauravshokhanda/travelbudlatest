@@ -1,15 +1,17 @@
-"use client";
+'use client';
 
-import Image from "next/image";
-import { useState } from "react";
-import Link from "next/link";
-import LoginForm from "@/components/auth/LoginForm";
-import LoginWithMobile from "@/components/auth/LoginWithMobile";
-import OtpModal from "@/components/auth/OtpModal";
-import { Button } from "@/components/ui/button";
+import Image from 'next/image';
+import { useState } from 'react';
+import Link from 'next/link';
+import LoginForm from '@/components/auth/LoginForm';
+import LoginWithMobile from '@/components/auth/LoginWithMobile';
+import OtpModal from '@/components/auth/OtpModal';
+import { Button } from '@/components/ui/button';
+import SignupPrompt from '@/components/ui/signUpPrompt';
+import RightImagesPanel from '@/components/RightImagesPanel';
 
 export default function LoginPage() {
-  const [tab, setTab] = useState<"email" | "mobile">("email");
+  const [tab, setTab] = useState<'email' | 'mobile'>('email');
   const [otpModalOpen, setOtpModalOpen] = useState(false);
 
   return (
@@ -29,7 +31,7 @@ export default function LoginPage() {
             </div>
 
             {/* Static Header Area */}
-            <div className="flex flex-col items-center gap-4 mb-6">
+            <div className="flex flex-col items-center gap-4 mb-6 mt-10 lg:mt-20">
               {/* Logo */}
               <Image
                 src="/images/TravelBud.png"
@@ -42,21 +44,21 @@ export default function LoginPage() {
               {/* Tabs */}
               <div className="flex w-full border-b">
                 <Button
-                  onClick={() => setTab("email")}
+                  onClick={() => setTab('email')}
                   className={`flex-1 py-2 font-medium rounded-none ${
-                    tab === "email"
-                      ? "border-b-2 border-primary text-primary"
-                      : "text-gray-500"
+                    tab === 'email'
+                      ? 'border-b-2 border-primary text-primary'
+                      : 'text-gray-500'
                   }`}
                 >
                   Email
                 </Button>
                 <Button
-                  onClick={() => setTab("mobile")}
+                  onClick={() => setTab('mobile')}
                   className={`flex-1 py-2 font-medium rounded-none ${
-                    tab === "mobile"
-                      ? "border-b-2 border-primary text-primary"
-                      : "text-gray-500"
+                    tab === 'mobile'
+                      ? 'border-b-2 border-primary text-primary'
+                      : 'text-gray-500'
                   }`}
                 >
                   Mobile Number
@@ -64,51 +66,23 @@ export default function LoginPage() {
               </div>
             </div>
 
-            {/* Fixed Content Area */}
-            <div className="flex-grow overflow-y-auto">
-              {tab === "email" ? (
+            {/* Form Switching Area - no unmount */}
+            <div className="relative w-full flex flex-col mt-4 transition-all duration-300">
+              <div className={tab === 'email' ? 'block' : 'hidden'}>
                 <LoginForm />
-              ) : (
+              </div>
+              <div className={tab === 'mobile' ? 'block' : 'hidden'}>
                 <LoginWithMobile onLoginClick={() => setOtpModalOpen(true)} />
-              )}
+              </div>
             </div>
           </div>
+
+          {/* Bottom prompt */}
+          <SignupPrompt />
         </div>
 
-        {/* Right Side */}
-        <div className="hidden lg:flex flex-col justify-between items-center px-6 py-10 text-center h-full">
-          <div className="flex flex-col items-center">
-            <Image
-              src="/images/Ecohouse.png"
-              alt="Ecohouse"
-              width={140}
-              height={140}
-              className="mb-4"
-            />
-            <h3 className="text-lg mt-2 text-black">
-              Search perfect stays!
-            </h3>
-            <p className="text-accent mt-1 max-w-xs text-sm">
-              Search the best stays and capture your favorite moments.
-            </p>
-          </div>
-
-          <div className="flex flex-col items-center">
-            <Image
-              src="/images/Retirementestate.png"
-              alt="List your property"
-              width={140}
-              height={140}
-              className="mb-4"
-            />
-            <h3 className="text-lg font-semibold mt-2 text-black">
-              List your property
-            </h3>
-            <p className="text-accent mt-1 max-w-xs text-sm">
-              List your property to earn and welcome travelers across the world.
-            </p>
-          </div>
-        </div>
+        {/* Right Panel */}
+        <RightImagesPanel />
       </div>
 
       {/* OTP Modal */}
@@ -116,7 +90,7 @@ export default function LoginPage() {
         isOpen={otpModalOpen}
         onClose={() => setOtpModalOpen(false)}
         onVerify={(otp) => {
-          console.log("OTP entered:", otp);
+          console.log('OTP entered:', otp);
           setOtpModalOpen(false);
         }}
       />
