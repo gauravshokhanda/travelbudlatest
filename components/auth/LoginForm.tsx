@@ -39,44 +39,47 @@ export default function LoginForm() {
   console.log("Redux after dispatch – token:", reduxToken);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    const emailError = validateEmail(email);
-    const passwordError = validatePassword(password);
+  const emailError = validateEmail(email);
+  const passwordError = validatePassword(password);
 
-    setTouched({ email: true, password: true });
-    setErrors({ email: emailError, password: passwordError });
+  setTouched({ email: true, password: true });
+  setErrors({ email: emailError, password: passwordError });
 
-    if (emailError || passwordError) return;
+  if (emailError || passwordError) return;
 
-    try {
-      const res = await API.post("/user/login", { email, password });
-      const user = res.data.data;
+  try {
+    const res = await API.post("/user/login", { email, password });
 
-      localStorage.setItem("token", user.token);
-      localStorage.setItem("user", JSON.stringify(user));
-
-      console.log("Dispatching user:", user);
-      dispatch(setUser({ user, token: user.token }));
-
-      setMessage(`Welcome, ${user.name}`);
-      console.log("Login Success:", user);
-
-      // Redirect after success
-      router.push("/profile");
-    } catch (err: unknown) {
-      if (err && typeof err === "object" && "response" in err) {
-        const axiosError = err as {
-          response?: { data?: { message?: string } };
-        };
-        const errorMessage =
-          axiosError?.response?.data?.message || "Something went wrong.";
-        setMessage(errorMessage);
-      } else {
-        setMessage("Something went wrong.");
-      }
+    if (!res.data.success) {
+      setMessage(`❌ ${res.data.message || "Login failed."}`);
+      return;
     }
-  };
+
+    const user = res.data.data;
+
+    localStorage.setItem("token", user.token);
+    localStorage.setItem("user", JSON.stringify(user));
+
+    dispatch(setUser({ user, token: user.token }));
+    setMessage(`✅ Welcome, ${user.name}`);
+
+    router.push("/profile");
+  } catch (err: unknown) {
+    if (err && typeof err === "object" && "response" in err) {
+      const axiosError = err as {
+        response?: { data?: { message?: string } };
+      };
+      const errorMessage =
+        axiosError?.response?.data?.message || "Something went wrong.";
+      setMessage(`❌ ${errorMessage}`);
+    } else {
+      setMessage("❌ Something went wrong.");
+    }
+  }
+};
+
 
   return (
     <div className="w-full max-w-md">

@@ -7,7 +7,6 @@ const axiosInstance = axios.create({
   headers: { 'Content-Type': 'application/json' },
 });
 
-// 🔐 Add token to headers before each request
 axiosInstance.interceptors.request.use(
   (config) => {
     const token = getToken();
@@ -19,7 +18,6 @@ axiosInstance.interceptors.request.use(
   }
 );
 
-// ❗ Global error logging
 axiosInstance.interceptors.response.use(
   (response) => response,
   (error) => {
