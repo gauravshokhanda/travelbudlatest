@@ -1,8 +1,6 @@
-'use client';
-
-import Image from 'next/image';
-import ForgotPasswordBox from '@/components/auth/ForgotPassword';
-import RightImagesPanel from '@/components/RightImagesPanel';
+"use client";
+import ForgotPasswordBox from "@/components/auth/ForgotPassword";
+import RightImagesPanel from "@/components/RightImagesPanel";
 
 export default function ForgotPasswordPage() {
   return (
@@ -12,7 +10,7 @@ export default function ForgotPasswordPage() {
         <div className="h-[90vh] w-full flex justify-center">
           <ForgotPasswordBox
             onSubmit={(email) => alert(`Reset email: ${email}`)}
-            onCancel={() => alert('Cancelled')}
+            onCancel={() => alert("Cancelled")}
           />
         </div>
       </div>

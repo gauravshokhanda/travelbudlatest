@@ -1,17 +1,29 @@
-'use client';
+"use client";
 
-import { Home, Users, DollarSign, CheckCircle } from 'lucide-react';
-import Image from 'next/image';
-import PrimaryButton from '@/components/PrimaryButton';
-import '@/app/globals.css';
+import { Home, Users, DollarSign, CheckCircle } from "lucide-react";
+import Image from "next/image";
+import PrimaryButton from "@/components/PrimaryButton";
+import "@/app/globals.css";
 
 export default function HomePage() {
   const offerings = [
-    { src: '/images/journeys.png', text: 'Your Passport to Memorable Journeys' },
-    { src: '/images/paradise.png', text: 'For Travellers, Find Your Perfect Getaway' },
-    { src: '/images/gateway.png', text: 'For Hosts, Share Your Slice of Paradise' },
-    { src: '/images/inspiration.png', text: 'Curate travel stories, tips, and inspiration' },
-    { src: '/images/cars.png', text: 'Explore Hidden Gems Across India' },
+    {
+      src: "/images/journeys.png",
+      text: "Your Passport to Memorable Journeys",
+    },
+    {
+      src: "/images/paradise.png",
+      text: "For Travellers, Find Your Perfect Getaway",
+    },
+    {
+      src: "/images/gateway.png",
+      text: "For Hosts, Share Your Slice of Paradise",
+    },
+    {
+      src: "/images/inspiration.png",
+      text: "Curate travel stories, tips, and inspiration",
+    },
+    { src: "/images/cars.png", text: "Explore Hidden Gems Across India" },
   ];
 
   return (
@@ -23,25 +35,26 @@ export default function HomePage() {
             Open your home and heart to the world!
           </h2>
           <p className="text-text text-lg max-w-3xl mx-auto mb-12">
-            List your property and open doors to travelers seeking authentic connections and unforgettable stays
+            List your property and open doors to travelers seeking authentic
+            connections and unforgettable stays
           </p>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-10">
             {[
               {
                 Icon: Home,
-                title: 'List',
-                desc: 'Sign up & create a compelling listing with photos and details. Keep your calendar & pricing updated.',
+                title: "List",
+                desc: "Sign up & create a compelling listing with photos and details. Keep your calendar & pricing updated.",
               },
               {
                 Icon: Users,
-                title: 'Connect',
-                desc: 'Travelers contact you directly—no middleman involved',
+                title: "Connect",
+                desc: "Travelers contact you directly—no middleman involved",
               },
               {
                 Icon: DollarSign,
-                title: 'Earn',
-                desc: 'Keep all your earnings—no commission fees!',
+                title: "Earn",
+                desc: "Keep all your earnings—no commission fees!",
               },
             ].map(({ Icon, title, desc }, idx) => (
               <div key={idx} className="text-center">
@@ -58,15 +71,32 @@ export default function HomePage() {
       <section className="py-20 bg-white">
         <div className="max-w-6xl mx-auto px-4">
           <div className="bg-secondary rounded-xl p-10 text-center">
-            <h2 className="text-2xl md:text-3xl font-bold text-heading mb-8">How It Will Work</h2>
+            <h2 className="text-2xl md:text-3xl font-bold text-heading mb-8">
+              How It Will Work
+            </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8 text-left">
               {["Browse", "Connect", "Book"].map((step, idx) => (
                 <div key={idx} className="flex items-start space-x-3">
                   <CheckCircle className="text-accent mt-1" />
                   <div>
-                    {step === "Browse" && <p><strong>Browse:</strong> Travelers discover properties with transparent pricing as set by host</p>}
-                    {step === "Connect" && <p><strong>Connect:</strong> Travelers would contact property owners directly.</p>}
-                    {step === "Book" && <p><strong>Book:</strong> Direct payment to hosts with no extra commission fees to guests or host.</p>}
+                    {step === "Browse" && (
+                      <p>
+                        <strong>Browse:</strong> Travelers discover properties
+                        with transparent pricing as set by host
+                      </p>
+                    )}
+                    {step === "Connect" && (
+                      <p>
+                        <strong>Connect:</strong> Travelers would contact
+                        property owners directly.
+                      </p>
+                    )}
+                    {step === "Book" && (
+                      <p>
+                        <strong>Book:</strong> Direct payment to hosts with no
+                        extra commission fees to guests or host.
+                      </p>
+                    )}
                   </div>
                 </div>
               ))}
@@ -79,7 +109,9 @@ export default function HomePage() {
       {/* Offerings Coming Soon */}
       <section className="py-20">
         <div className="max-w-6xl mx-auto px-4 text-center">
-          <h2 className="text-3xl text-primary mb-10">TravelBud Offerings Coming Soon!</h2>
+          <h2 className="text-3xl text-primary mb-10">
+            TravelBud Offerings Coming Soon!
+          </h2>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
             {offerings.slice(0, 4).map((item, idx) => (
@@ -118,10 +150,18 @@ export default function HomePage() {
           <h2 className="text-2xl md:text-3xl text-primary mb-2">About us</h2>
           <div className="w-12 h-1 mx-auto bg-accent rounded mb-8"></div>
           <p className="text-text text-lg leading-relaxed mb-6">
-            At TravelBud, we're your trusted companion for unforgettable travel experiences. Whether you're seeking a cozy home away from home, eager to open your doors to curious explorers, or simply looking for inspiration through captivating travel stories, we've got you covered.
+            At TravelBud, we&rsquo;re your trusted companion for unforgettable
+            travel experiences. Whether you&rsquo;re seeking a cozy home away
+            from home, eager to open your doors to curious explorers, or simply
+            looking for inspiration through captivating travel stories,
+            we&rsquo;ve got you covered.
           </p>
           <p className="text-text text-lg leading-relaxed">
-            TravelBud was born from the passion and expertise of a dynamic trio of founders, each bringing a unique blend of experience to the table. They bring a wealth of experience from fintech, IT, and sales. Together, they're reshaping the way you discover and experience travel.
+            TravelBud was born from the passion and expertise of a dynamic trio
+            of founders, each bringing a unique blend of experience to the
+            table. They bring a wealth of experience from fintech, IT, and
+            sales. Together, they&rsquo;re reshaping the way you discover and
+            experience travel.
           </p>
         </div>
       </section>
@@ -144,7 +184,9 @@ export default function HomePage() {
               />
             </div>
             <div className="text-center md:text-left">
-              <p className="text-lg mb-2 text-heading">For any queries reach out to us at</p>
+              <p className="text-lg mb-2 text-heading">
+                For any queries reach out to us at
+              </p>
               <p className="text-primary text-lg">info@travelbud.in</p>
             </div>
           </div>

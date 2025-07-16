@@ -1,17 +1,17 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import Image from 'next/image';
-import PrimaryButton from '@/components/PrimaryButton';
-import { Input } from '@/components/ui/input';
+import { useEffect, useState } from "react";
+import Image from "next/image";
+import PrimaryButton from "@/components/PrimaryButton";
+import { Input } from "@/components/ui/input";
 
 interface Props {
   onSubmit?: (email: string) => void;
   onCancel?: () => void;
 }
 
-export default function ForgotPassword({ onSubmit, onCancel }: Props) {
-  const [email, setEmail] = useState('');
+export default function ForgotPassword({ onCancel }: Props) {
+  const [email, setEmail] = useState("");
   const [hasMounted, setHasMounted] = useState(false);
 
   useEffect(() => {
@@ -37,7 +37,8 @@ export default function ForgotPassword({ onSubmit, onCancel }: Props) {
           Forgot password
         </h2>
         <p className="text-center font-poppins text-text text-base mb-6">
-          Provide your account&apos;s email for which you want to reset your password
+          Provide your account&apos;s email for which you want to reset your
+          password
         </p>
 
         {/* Email Input */}
@@ -52,7 +53,7 @@ export default function ForgotPassword({ onSubmit, onCancel }: Props) {
             id="email"
             type="email"
             value={email}
-            hasError={!email.includes('@') && email.length > 0}
+            hasError={!email.includes("@") && email.length > 0}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="Enter your registered email"
           />

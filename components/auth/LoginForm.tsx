@@ -23,8 +23,13 @@ export default function LoginForm() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
-  const [touched, setTouched] = useState<{ email?: boolean; password?: boolean }>({});
+  const [errors, setErrors] = useState<{ email?: string; password?: string }>(
+    {}
+  );
+  const [touched, setTouched] = useState<{
+    email?: boolean;
+    password?: boolean;
+  }>({});
   const [message, setMessage] = useState<string | null>(null);
 
   const reduxUser = useSelector((state: RootState) => state.auth.user);
@@ -59,11 +64,17 @@ export default function LoginForm() {
 
       // Redirect after success
       router.push("/profile");
-    } catch (err: any) {
-      console.error("Login Error:", err);
-      const errorMessage =
-        err?.response?.data?.message || "Something went wrong.";
-      setMessage(errorMessage);
+    } catch (err: unknown) {
+      if (err && typeof err === "object" && "response" in err) {
+        const axiosError = err as {
+          response?: { data?: { message?: string } };
+        };
+        const errorMessage =
+          axiosError?.response?.data?.message || "Something went wrong.";
+        setMessage(errorMessage);
+      } else {
+        setMessage("Something went wrong.");
+      }
     }
   };
 

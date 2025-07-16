@@ -1,8 +1,5 @@
-/** @type {import('next').NextConfig} */
 const nextConfig = {
-  experimental: {
-    turbo: false,
-  },
+  turbopack: {}, // Turbopack is now stable and should be configured here
 };
 
-module.exports = nextConfig;
+export default nextConfig;
