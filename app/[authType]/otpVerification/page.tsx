@@ -4,6 +4,7 @@ import OtpVerification from '@/components/auth/OtpVerification';
 import Image from 'next/image';
 import { useParams } from 'next/navigation';
 import { useSearchParams } from 'next/navigation';
+import RedirectIfAuthenticated from '@/components/RedirectIfAuthenticated';
 
 export default function OtpVerificationPage() {
   const params = useParams();
@@ -17,7 +18,8 @@ const phone = searchParams.get('phone');
   return (
     <div className="h-screen w-screen bg-secondary">
       <div className="bg-white w-full h-full grid grid-cols-1 lg:grid-cols-2 overflow-hidden">
-        <OtpVerification authType={authType} />
+         <RedirectIfAuthenticated> <OtpVerification authType={authType} /></RedirectIfAuthenticated>
+       
 
         {/* Right Section */}
         <div className="hidden lg:flex flex-col justify-between items-center bg-white px-10 py-10">

@@ -7,7 +7,7 @@ import GoogleLoginButton from '@/components/GoogleLoginButton';
 import MobileInput from '@/components/ui/mobileInput';
 
 interface Props {
-  onLoginClick: () => void;
+  onLoginClick: (phone: string) => void;
 }
 
 export default function LoginWithMobile({ onLoginClick }: Props) {
@@ -21,7 +21,7 @@ export default function LoginWithMobile({ onLoginClick }: Props) {
     setErrors({ mobile: error });
 
     if (!error) {
-      onLoginClick();
+      onLoginClick(mobile);
     }
   };
 

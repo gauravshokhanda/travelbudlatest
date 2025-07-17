@@ -10,7 +10,7 @@ export default function ResetPassword() {
   return (
     <div className="min-h-screen w-full grid grid-cols-1 lg:grid-cols-2 bg-white">
       {/* Left Form */}
-      <div className="flex items-start justify-center px-6 pt-20">
+      <div className="flex items-start justify-center px-2">
         <ResetPasswordForm />
       </div>
 

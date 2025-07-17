@@ -13,6 +13,17 @@ import RightImagesPanel from '@/components/RightImagesPanel';
 export default function LoginPage() {
   const [tab, setTab] = useState<'email' | 'mobile'>('email');
   const [otpModalOpen, setOtpModalOpen] = useState(false);
+  const [phone, setPhone] = useState(''); // ✅ Added
+
+  const handleLoginClick = (mobile: string) => {
+    setPhone(mobile);              // ✅ Store the phone
+    setOtpModalOpen(true);        // ✅ Open modal
+  };
+
+  const handleResend = () => {
+    console.log('🔁 Resending OTP to', phone);
+    // add resend logic here (e.g., API call)
+  };
 
   return (
     <main className="bg-white w-screen h-screen overflow-hidden">
@@ -30,9 +41,8 @@ export default function LoginPage() {
               </Link>
             </div>
 
-            {/* Static Header Area */}
-            <div className="flex flex-col items-center gap-4 mb-6 mt-10 lg:mt-20">
-              {/* Logo */}
+            {/* Header */}
+            <div className="flex flex-col items-center gap-4 mb-6 mt-10 lg:mt-16">
               <Image
                 src="/images/TravelBud.png"
                 alt="TravelBud Logo"
@@ -41,7 +51,6 @@ export default function LoginPage() {
                 priority
               />
 
-              {/* Tabs */}
               <div className="flex w-full border-b">
                 <Button
                   onClick={() => setTab('email')}
@@ -66,33 +75,31 @@ export default function LoginPage() {
               </div>
             </div>
 
-            {/* Form Switching Area - no unmount */}
+            {/* Form Switching */}
             <div className="relative w-full flex flex-col mt-4 transition-all duration-300">
-              <div className={tab === 'email' ? 'block' : 'hidden'}>
-                <LoginForm />
-              </div>
-              <div className={tab === 'mobile' ? 'block' : 'hidden'}>
-                <LoginWithMobile onLoginClick={() => setOtpModalOpen(true)} />
-              </div>
+              {tab === 'email' && <LoginForm />}
+              {tab === 'mobile' && (
+                <LoginWithMobile onLoginClick={handleLoginClick} /> // ✅ pass function
+              )}
             </div>
           </div>
 
-          {/* Bottom prompt */}
           <SignupPrompt />
         </div>
 
-        {/* Right Panel */}
         <RightImagesPanel />
       </div>
 
-      {/* OTP Modal */}
+      {/* ✅ OTP Modal (Now with phone + onResend) */}
       <OtpModal
         isOpen={otpModalOpen}
         onClose={() => setOtpModalOpen(false)}
         onVerify={(otp) => {
-          console.log('OTP entered:', otp);
+          console.log('✅ OTP entered:', otp);
           setOtpModalOpen(false);
         }}
+        onResend={handleResend}
+        phone={phone}
       />
     </main>
   );

@@ -5,11 +5,12 @@ import OtpVerificationBox from '@/components/auth/OtpVerificationBox';
 import RightImagesPanel from '@/components/RightImagesPanel';
 import API from '@/lib/axios';
 import { AxiosError } from 'axios';
+import { useSessionInput } from '@/hooks/useSessionInput';
 
 export default function VerifyOtpPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const email = searchParams.get('email') || '';
+  const [email] = useSessionInput('forgot_email');
   const phone = searchParams.get('phone') || '';
 
  const handleVerify = async (otp: string) => {

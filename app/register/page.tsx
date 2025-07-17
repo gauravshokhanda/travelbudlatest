@@ -2,6 +2,7 @@
 
 import RightImagesPanel from '@/components/RightImagesPanel';
 import RegisterForm from '@/components/auth/RegisterForm';
+import RedirectIfAuthenticated from '@/components/RedirectIfAuthenticated';
 
 export default function RegisterPage() {
   return (
@@ -9,10 +10,10 @@ export default function RegisterPage() {
       <div className="h-full w-full grid grid-cols-1 lg:grid-cols-2">
         {/* Left Side with scroll */}
         <div className="flex flex-col mt-5 items-center justify-start px-4 md:px-8 py-6 h-full overflow-y-auto hide-scrollbar">
-          <RegisterForm />
+          <RedirectIfAuthenticated>
+            <RegisterForm />
+          </RedirectIfAuthenticated>
         </div>
-
-        {/* Right Side (fixed visuals) */}
         <RightImagesPanel />
       </div>
     </main>

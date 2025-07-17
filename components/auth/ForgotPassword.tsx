@@ -7,6 +7,8 @@ import { Input } from '@/components/ui/input';
 import API from '@/lib/axios';
 import { validateEmail } from '@/lib/validators';
 import { useRouter } from 'next/navigation';
+import { useSessionInput } from '@/hooks/useSessionInput';
+import Spinner from '@/components/ui/spinner';
 
 interface Props {
   onSubmit?: (email: string) => void;
@@ -14,7 +16,7 @@ interface Props {
 }
 
 export default function ForgotPassword({ onCancel }: Props) {
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useSessionInput('forgot_email');
   const [hasMounted, setHasMounted] = useState(false);
   const [error, setError] = useState<string | undefined>();
   const [touched, setTouched] = useState(false);
@@ -45,19 +47,21 @@ export default function ForgotPassword({ onCancel }: Props) {
       if (res.data.success) {
         setSuccess(true);
         setMessage('OTP sent successfully. Please check your email.');
-          setTimeout(() => {
-    router.push(`/login/forgotPassword/verifyOtp?email=${encodeURIComponent(email)}`);
-  }, 1000);
+        setTimeout(() => {
+          router.push(`/login/forgotPassword/verifyOtp?email=${encodeURIComponent(email)}`);
+        }, 1000);
       } else {
         setSuccess(false);
         setMessage(res.data.message || 'Something went wrong.');
       }
-    } catch (err: any) {
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: { message?: string } } };
       setSuccess(false);
       setMessage(
         err?.response?.data?.message || 'An error occurred while requesting reset.'
       );
-    } finally {
+    }
+    finally {
       setLoading(false);
     }
   };
@@ -115,9 +119,8 @@ export default function ForgotPassword({ onCancel }: Props) {
         {/* Message Below Input */}
         {message && (
           <p
-            className={`text-sm mt-2 ${
-              success ? 'text-green-600' : 'text-red-500'
-            }`}
+            className={`text-sm mt-2 ${success ? 'text-green-600' : 'text-red-500'
+              }`}
           >
             {message}
           </p>
@@ -125,7 +128,15 @@ export default function ForgotPassword({ onCancel }: Props) {
 
         {/* Buttons */}
         <div className="flex gap-6 mt-auto pt-8">
-          <PrimaryButton outline className="flex-1" onClick={onCancel}>
+          <PrimaryButton
+            outline
+            className="flex-1"
+            onClick={() => {
+              sessionStorage.removeItem('forgot_email');
+              sessionStorage.removeItem('otp_code');
+              router.push('/login');
+            }}
+          >
             Cancel
           </PrimaryButton>
           <PrimaryButton
@@ -133,7 +144,11 @@ export default function ForgotPassword({ onCancel }: Props) {
             onClick={handleReset}
             disabled={!email || !!error || loading}
           >
-            {loading ? 'Sending...' : 'Reset'}
+            <div className="flex items-center justify-center gap-2">
+              {loading && <Spinner />}
+              {loading ? 'Sending...' : 'Reset'}
+            </div>
+
           </PrimaryButton>
         </div>
       </div>

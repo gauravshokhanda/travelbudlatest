@@ -40,6 +40,16 @@ export const validateConfirmEmail = (
   return undefined;
 };
 
+export const getPasswordValidationStatus = (password: string) => {
+  return {
+    minLength: password.length >= 8,
+    upperCase: /[A-Z]/.test(password),
+    lowerCase: /[a-z]/.test(password),
+    hasNumber: /\d/.test(password),
+    hasSpecialChar: /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password),
+  };
+};
+
 // ✅ Confirm password matches
 export const validateConfirmPassword = (
   password: string,

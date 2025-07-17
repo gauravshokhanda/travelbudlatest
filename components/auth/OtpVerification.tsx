@@ -107,7 +107,10 @@ export default function OtpVerificationBox({
           {otp.map((digit, index) => (
             <input
               key={index}
-              ref={(el) => (inputRefs.current[index] = el)}
+              ref={(el) => {
+  inputRefs.current[index] = el;
+}}
+
               maxLength={1}
               value={digit}
               onChange={(e) => handleChange(index, e.target.value)}

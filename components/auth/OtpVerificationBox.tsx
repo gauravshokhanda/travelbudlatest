@@ -5,6 +5,8 @@ import { useState, useRef, useEffect } from 'react';
 import PrimaryButton from '@/components/PrimaryButton';
 import SecondaryButton from '@/components/SecondaryButton';
 import { Button } from '@/components/ui/button';
+import OtpInput from '@/components/ui/otpInput';
+import Spinner from '@/components/ui/spinner';
 
 interface OtpVerificationBoxProps {
   email: string;
@@ -35,12 +37,23 @@ export default function OtpVerificationBox({
   const [message, setMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
+  // Load OTP from sessionStorage
+  useEffect(() => {
+    const savedOtp = sessionStorage.getItem('otp_code');
+    if (savedOtp?.length === 6) {
+      setOtp(savedOtp.split(''));
+    }
+  }, []);
+
   const handleChange = (index: number, value: string) => {
     if (/^\d?$/.test(value)) {
       const updatedOtp = [...otp];
       updatedOtp[index] = value;
       setOtp(updatedOtp);
-      if (value && index < 5) inputRefs.current[index + 1]?.focus();
+      sessionStorage.setItem('otp_code', updatedOtp.join(''));
+      if (value && index < 5) {
+        inputRefs.current[index + 1]?.focus();
+      }
     }
   };
 
@@ -56,15 +69,24 @@ export default function OtpVerificationBox({
       setMessage('❌ Please enter the 6-digit OTP.');
       return;
     }
+
+    setLoading(true);
+    setMessage(null);
+
     try {
-      setLoading(true);
-      await onVerify(otpCode);
-    } catch (err: any) {
-      setMessage('❌ ' + err.message);
+      const result = await onVerify(otpCode);
+      if (!result.success) {
+        setMessage('❌ ' + result.message);
+      }
+    } catch (error: unknown) {
+      const err = error as { message?: string };
+      setMessage('❌ ' + (err?.message || 'Something went wrong.'));
     } finally {
       setLoading(false);
     }
   };
+
+  const hasError = message?.toLowerCase().includes('invalid') || message?.toLowerCase().includes("doesn't");
 
   return (
     <div className="h-screen w-screen bg-secondary">
@@ -90,14 +112,13 @@ export default function OtpVerificationBox({
             <label className="text-sm text-red-500 font-medium">Verification Code</label>
             <div className="flex justify-start gap-2 mb-2 mt-2">
               {otp.map((digit, index) => (
-                <input
+                <OtpInput
                   key={index}
-                  ref={(el) => (inputRefs.current[index] = el)}
-                  maxLength={1}
                   value={digit}
                   onChange={(e) => handleChange(index, e.target.value)}
                   onKeyDown={(e) => handleKeyDown(index, e)}
-                  className="w-12 h-12 text-center border border-gray-300 rounded-lg text-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                  inputRef={(el) => (inputRefs.current[index] = el)}
+                  hasError={hasError}
                 />
               ))}
             </div>
@@ -121,14 +142,19 @@ export default function OtpVerificationBox({
             <PrimaryButton
               className="w-full sm:w-1/2"
               onClick={handleVerifyClick}
-              disabled={loading}
+              disabled={loading || otp.some((digit) => digit === '')}
             >
-              {loading ? 'Verifying...' : 'Verify'}
+              {loading ? (
+                <div className="flex items-center justify-center gap-2">
+                  <Spinner />
+                  Verifying...
+                </div>
+              ) : (
+                'Verify'
+              )}
             </PrimaryButton>
           </div>
         </div>
-
-       
       </div>
     </div>
   );

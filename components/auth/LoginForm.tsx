@@ -16,6 +16,7 @@ import GoogleLoginButton from "@/components/GoogleLoginButton";
 import PrimaryButton from "@/components/PrimaryButton";
 import PasswordInput from "@/components/ui/PasswordInput";
 import { RootState } from "@/store";
+import Spinner from "@/components/ui/spinner";
 
 export default function LoginForm() {
   const router = useRouter();
@@ -31,14 +32,15 @@ export default function LoginForm() {
     password?: boolean;
   }>({});
   const [message, setMessage] = useState<string | null>(null);
-
+  const [redirecting, setRedirecting] = useState(false);
+  const [loading, setLoading] = useState(false);
   const reduxUser = useSelector((state: RootState) => state.auth.user);
   const reduxToken = useSelector((state: RootState) => state.auth.token);
 
   console.log("✅ Redux user value:", reduxUser);
   console.log("Redux after dispatch – token:", reduxToken);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+ const handleSubmit = async (e: React.FormEvent) => {
   e.preventDefault();
 
   const emailError = validateEmail(email);
@@ -49,6 +51,8 @@ export default function LoginForm() {
 
   if (emailError || passwordError) return;
 
+  setLoading(true); // ✅ show button spinner
+
   try {
     const res = await API.post("/user/login", { email, password });
 
@@ -58,31 +62,31 @@ export default function LoginForm() {
     }
 
     const user = res.data.data;
-
     localStorage.setItem("token", user.token);
     localStorage.setItem("user", JSON.stringify(user));
-
     dispatch(setUser({ user, token: user.token }));
-    setMessage(`✅ Welcome, ${user.name}`);
 
+    setMessage(`✅ Welcome, ${user.name}`);
     router.push("/profile");
   } catch (err: unknown) {
-    if (err && typeof err === "object" && "response" in err) {
-      const axiosError = err as {
-        response?: { data?: { message?: string } };
-      };
-      const errorMessage =
-        axiosError?.response?.data?.message || "Something went wrong.";
-      setMessage(`❌ ${errorMessage}`);
-    } else {
-      setMessage("❌ Something went wrong.");
-    }
+    const axiosError = err as { response?: { data?: { message?: string } } };
+    const errorMessage =
+      axiosError?.response?.data?.message || "Something went wrong.";
+    setMessage(`❌ ${errorMessage}`);
+  } finally {
+    setLoading(false); // ✅ hide button spinner
   }
 };
 
 
+
   return (
     <div className="w-full max-w-md">
+      {redirecting && (
+        <div className="absolute inset-0 bg-white/60 flex items-center justify-center z-50 rounded-lg">
+          <Spinner />
+        </div>
+      )}
       <form onSubmit={handleSubmit} className="space-y-6">
         <FormInput
           label="Email"
@@ -120,13 +124,26 @@ export default function LoginForm() {
         />
 
         <div className="flex items-center justify-end">
-          <Link href="/login/forgotPassword" className="text-sm text-primary">
+          <button
+            type="button"
+            onClick={() => {
+              setRedirecting(true);
+              setTimeout(() => {
+                router.push("/login/forgotPassword");
+              }, 500);
+            }}
+            className="text-sm text-primary"
+          >
             Forgot password?
-          </Link>
+          </button>
+
         </div>
 
         <PrimaryButton type="submit" className="w-full">
-          Log in
+          <div className="flex items-center justify-center gap-2">
+            {loading && <Spinner />}
+            {loading ? "Logging in..." : "Log in"}
+          </div>
         </PrimaryButton>
 
         {message && (
