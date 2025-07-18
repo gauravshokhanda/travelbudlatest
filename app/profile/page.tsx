@@ -7,9 +7,9 @@ export default function Profile() {
   return (
     <main>
       <Navbar />
-      <ProtectedRoute>
+      {/* <ProtectedRoute> */}
         <ProfilePage />
-      </ProtectedRoute>
+      {/* </ProtectedRoute> */}
 
       <Footer />
     </main>

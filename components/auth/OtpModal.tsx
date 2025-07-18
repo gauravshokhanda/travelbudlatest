@@ -9,6 +9,7 @@ interface OtpModalProps {
   onVerify: (otp: string) => void;
   onResend: () => void;
   phone: string;
+  email: string;
   error?: string | null;
 }
 
@@ -17,6 +18,7 @@ export default function OtpModal({
   onClose,
   onVerify,
   onResend,
+  email,
   phone,
   error,
 }: OtpModalProps) {
@@ -69,7 +71,7 @@ export default function OtpModal({
 
         <h2 className="text-xl font-semibold text-center mb-1 text-black">OTP Verification</h2>
         <p className="text-sm text-text text-center mb-4">
-          Enter verification code sent to <span className="font-medium text-text">+91 {phone}</span>
+          Enter verification code sent to <span className="font-medium text-text">{email}</span>
         </p>
 
         <div className="flex justify-center gap-2 mb-2">
@@ -77,8 +79,8 @@ export default function OtpModal({
             <input
               key={index}
               ref={(el) => {
-  inputRefs.current[index] = el;
-}}
+                inputRefs.current[index] = el;
+              }}
 
               maxLength={1}
               value={digit}

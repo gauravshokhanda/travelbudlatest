@@ -51,7 +51,6 @@ export default function VerifyOtpPage() {
         <OtpVerificationBox
           email={email}
           phone={phone}
-          heading="Verify OTP"
           subtext="Enter verification code sent to"
           onVerify={handleVerify}
         />

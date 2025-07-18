@@ -1,29 +1,45 @@
 'use client';
 
 import Image from 'next/image';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import LoginForm from '@/components/auth/LoginForm';
 import LoginWithMobile from '@/components/auth/LoginWithMobile';
 import OtpModal from '@/components/auth/OtpModal';
 import { Button } from '@/components/ui/button';
 import SignupPrompt from '@/components/ui/signUpPrompt';
 import RightImagesPanel from '@/components/RightImagesPanel';
+import { useAuth } from '@/hooks/useAuth';
+
 
 export default function LoginPage() {
+  const { isLoggedIn } = useAuth();
+  const router = useRouter();
+
+  // Redirect logged-in users to profile or home
+  useEffect(() => {
+    if (isLoggedIn) {
+      router.replace('/profile');
+    }
+  }, [isLoggedIn]);
+
   const [tab, setTab] = useState<'email' | 'mobile'>('email');
   const [otpModalOpen, setOtpModalOpen] = useState(false);
-  const [phone, setPhone] = useState(''); // ✅ Added
+  const [phone, setPhone] = useState('');
 
   const handleLoginClick = (mobile: string) => {
-    setPhone(mobile);              // ✅ Store the phone
-    setOtpModalOpen(true);        // ✅ Open modal
+    setPhone(mobile);
+    setOtpModalOpen(true);
   };
 
   const handleResend = () => {
     console.log('🔁 Resending OTP to', phone);
-    // add resend logic here (e.g., API call)
+    // Add resend OTP logic
   };
+
+  // ⛔ Prevent page render while redirecting
+  if (isLoggedIn) return null;
 
   return (
     <main className="bg-white w-screen h-screen overflow-hidden">
@@ -79,7 +95,7 @@ export default function LoginPage() {
             <div className="relative w-full flex flex-col mt-4 transition-all duration-300">
               {tab === 'email' && <LoginForm />}
               {tab === 'mobile' && (
-                <LoginWithMobile onLoginClick={handleLoginClick} /> // ✅ pass function
+                <LoginWithMobile onLoginClick={handleLoginClick} />
               )}
             </div>
           </div>
@@ -90,7 +106,7 @@ export default function LoginPage() {
         <RightImagesPanel />
       </div>
 
-      {/* ✅ OTP Modal (Now with phone + onResend) */}
+      {/* OTP Modal */}
       <OtpModal
         isOpen={otpModalOpen}
         onClose={() => setOtpModalOpen(false)}

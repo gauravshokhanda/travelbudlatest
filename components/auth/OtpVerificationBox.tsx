@@ -7,6 +7,7 @@ import SecondaryButton from '@/components/SecondaryButton';
 import { Button } from '@/components/ui/button';
 import OtpInput from '@/components/ui/otpInput';
 import Spinner from '@/components/ui/spinner';
+import ResendTimerButton from '@/components/ResendTimerButton';
 
 interface OtpVerificationBoxProps {
   email: string;
@@ -37,7 +38,6 @@ export default function OtpVerificationBox({
   const [message, setMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  // Load OTP from sessionStorage
   useEffect(() => {
     const savedOtp = sessionStorage.getItem('otp_code');
     if (savedOtp?.length === 6) {
@@ -102,15 +102,17 @@ export default function OtpVerificationBox({
               className="mx-auto mb-8"
             />
 
-            <h2 className="text-3xl font-bold text-black text-center mb-2">{heading}</h2>
+            <h2 className="text-4xl font-bold text-black text-center mb-2">{heading}</h2>
             <p className="text-center text-sm text-gray-600 mb-8">
               {subtext}
               <br />
               <span className="font-medium">{phone || email}</span>
             </p>
 
-            <label className="text-sm text-red-500 font-medium">Verification Code</label>
-            <div className="flex justify-start gap-2 mb-2 mt-2">
+            <label className="text-sm text-primary font-medium">Verification Code</label>
+
+            {/* OTP inputs row */}
+            <div className="flex justify-start gap-2 mt-2">
               {otp.map((digit, index) => (
                 <OtpInput
                   key={index}
@@ -123,11 +125,22 @@ export default function OtpVerificationBox({
               ))}
             </div>
 
+            {/* Error Message */}
             {message && (
               <p className="text-sm text-red-500 mt-2 whitespace-pre-wrap">
                 {message}
               </p>
             )}
+
+            {/* Resend Timer */}
+            <div className="mt-4">
+             <ResendTimerButton
+  email={email} // ✅ This was missing
+  onResendConfirm={() => {
+    console.log('Resending OTP...');
+  }}
+/>
+            </div>
           </div>
 
           {/* Action Buttons */}
@@ -147,7 +160,6 @@ export default function OtpVerificationBox({
               {loading ? (
                 <div className="flex items-center justify-center gap-2">
                   <Spinner />
-                  Verifying...
                 </div>
               ) : (
                 'Verify'

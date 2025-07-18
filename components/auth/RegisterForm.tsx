@@ -309,6 +309,7 @@ export default function RegisterForm() {
         }}
         onResend={handleResend}
         phone={formData.mobileNumber}
+         email={formData.email}
         error={otpModalError}
       />
     </div>

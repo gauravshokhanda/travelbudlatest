@@ -8,6 +8,7 @@ import PrimaryButton from '@/components/PrimaryButton';
 import SecondaryButton from '@/components/SecondaryButton';
 import API from '@/lib/axios';
 import { useSessionInput } from '@/hooks/useSessionInput';
+import PasswordSuccessModal from '@/components/auth/PasswordSuccessModal';
 import {
   getPasswordValidationStatus,
   validatePassword,
@@ -19,13 +20,14 @@ export default function ResetPasswordForm() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
   const email = searchParams.get('email') || '';
   const resetPasswordToken = searchParams.get('token') || '';
 
   const [password, setPassword] = useSessionInput('reset_password');
   const [confirmPassword, setConfirmPassword] = useSessionInput('reset_confirm_password');
-  const [touched, setTouched] = useState(false);
 
+  const [touched, setTouched] = useState(false);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
   const [success, setSuccess] = useState<boolean | null>(null);
@@ -59,22 +61,16 @@ export default function ResetPasswordForm() {
 
       if (res.data.success) {
         setSuccess(true);
-        setMessage(res.data.message || 'Password reset successfully.');
-        sessionStorage.removeItem('forgot_email');
-        sessionStorage.removeItem('reset_password');
-        sessionStorage.removeItem('reset_confirm_password');
-        sessionStorage.removeItem('otp_code');
-        setTimeout(() => {
-          router.push('/login');
-        }, 1000);
+        setShowSuccessModal(true);
+        sessionStorage.clear();
       } else {
         setSuccess(false);
         setMessage(res.data.message || 'Something went wrong.');
       }
     } catch (error: unknown) {
-  const err = error as Error;
-  setMessage(err.message || 'Something went wrong.');
-} finally {
+      const err = error as Error;
+      setMessage(err.message || 'Something went wrong.');
+    } finally {
       setLoading(false);
     }
   };
@@ -160,6 +156,13 @@ export default function ResetPasswordForm() {
           Cancel
         </SecondaryButton>
       </div>
+      <PasswordSuccessModal
+        open={showSuccessModal}
+        onLoginClick={() => {
+          sessionStorage.clear();
+          router.push('/login');
+        }}
+      />
     </div>
   );
 }
