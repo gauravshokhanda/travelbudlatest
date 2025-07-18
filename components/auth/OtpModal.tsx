@@ -2,15 +2,17 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { X } from 'lucide-react';
+import Spinner from '@/components/ui/spinner';
 
 interface OtpModalProps {
   isOpen: boolean;
   onClose: () => void;
   onVerify: (otp: string) => void;
   onResend: () => void;
-  phone: string;
   email: string;
   error?: string | null;
+  resending?: boolean;
+  phone?: string; 
 }
 
 export default function OtpModal({
@@ -19,8 +21,8 @@ export default function OtpModal({
   onVerify,
   onResend,
   email,
-  phone,
   error,
+  resending = false,
 }: OtpModalProps) {
   const [otp, setOtp] = useState(Array(6).fill(''));
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
@@ -71,17 +73,16 @@ export default function OtpModal({
 
         <h2 className="text-xl font-semibold text-center mb-1 text-black">OTP Verification</h2>
         <p className="text-sm text-text text-center mb-4">
-          Enter verification code sent to <span className="font-medium text-text">{email}</span>
+          Enter verification code sent to <span className="font-medium">{email}</span>
         </p>
 
         <div className="flex justify-center gap-2 mb-2">
           {otp.map((digit, index) => (
             <input
               key={index}
-              ref={(el) => {
+               ref={(el) => {
                 inputRefs.current[index] = el;
               }}
-
               maxLength={1}
               value={digit}
               onChange={(e) => handleChange(index, e.target.value)}
@@ -99,7 +100,12 @@ export default function OtpModal({
           {timeLeft > 0 ? (
             <span>Resend OTP in {formatTime(timeLeft)}</span>
           ) : (
-            <button onClick={onResend} className="hover:underline">
+            <button
+              onClick={onResend}
+              className="hover:underline flex items-center gap-1"
+              disabled={resending}
+            >
+              {resending && <Spinner  />}
               Resend OTP
             </button>
           )}

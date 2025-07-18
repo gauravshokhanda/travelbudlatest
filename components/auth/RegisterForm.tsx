@@ -40,6 +40,7 @@ export default function RegisterForm() {
   const [otpModalError, setOtpModalError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [redirecting, setRedirecting] = useState(false);
+  const [resending, setResending] = useState(false);
   const router = useRouter();
 
   const handleChange = (field: string, value: string) => {
@@ -97,26 +98,24 @@ export default function RegisterForm() {
       setMessage('✅ Registration successful!');
       setOtpModalError(null);
       setOtpModalOpen(true);
-      setLoading(false);
     } catch (error) {
       const err = error as AxiosError<{ message: string }>;
       setMessage(err.response?.data?.message || 'Something went wrong.');
+    } finally {
       setLoading(false);
     }
   };
 
   const handleResend = async () => {
+    setResending(true);
     try {
-      await API.post('/user/resend-otp', {
-        email: formData.email,
-        phone_number: formData.mobileNumber,
-      });
-
+      await API.post('/user/resend-otp', { email: formData.email });
       router.push(
         `/register/otpVerification?email=${formData.email}&phone=${formData.mobileNumber}`
       );
     } catch {
       alert('Failed to resend OTP. Please try again.');
+      setResending(false);
     }
   };
 
@@ -138,9 +137,7 @@ export default function RegisterForm() {
           height={100}
           priority
         />
-        <h2 className="text-3xl font-bold text-black mt-6 mb-2">
-          Create Account
-        </h2>
+        <h2 className="text-3xl font-bold text-black mt-6 mb-2">Create Account</h2>
       </div>
 
       {/* Form (scrollable) */}
@@ -292,7 +289,7 @@ export default function RegisterForm() {
           try {
             const res = await API.post('/user/verify-email', {
               email: formData.email,
-              otp: otp,
+              otp,
             });
 
             if (res.data.success) {
@@ -302,15 +299,15 @@ export default function RegisterForm() {
             } else {
               setOtpModalError(res.data.message || 'Verification failed.');
             }
-         } catch (err: unknown) {
-  const error = err as Error;
-  setOtpModalError(error.message || 'Failed to verify OTP. Try again.');
-}
+          } catch (err: unknown) {
+            const error = err as Error;
+            setOtpModalError(error.message || 'Failed to verify OTP. Try again.');
+          }
         }}
         onResend={handleResend}
-        phone={formData.mobileNumber}
-         email={formData.email}
+        email={formData.email}
         error={otpModalError}
+        resending={resending}
       />
     </div>
   );

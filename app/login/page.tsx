@@ -27,6 +27,7 @@ export default function LoginPage() {
   const [tab, setTab] = useState<'email' | 'mobile'>('email');
   const [otpModalOpen, setOtpModalOpen] = useState(false);
   const [phone, setPhone] = useState('');
+  const [email, setEmail] = useState('');
 
   const handleLoginClick = (mobile: string) => {
     setPhone(mobile);
@@ -116,6 +117,7 @@ export default function LoginPage() {
         }}
         onResend={handleResend}
         phone={phone}
+        email={email}
       />
     </main>
   );
