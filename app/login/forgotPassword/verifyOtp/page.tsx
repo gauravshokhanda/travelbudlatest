@@ -1,49 +1,50 @@
-'use client';
+"use client";
 
-import { useSearchParams, useRouter } from 'next/navigation';
-import OtpVerificationBox from '@/components/auth/OtpVerificationBox';
-import RightImagesPanel from '@/components/RightImagesPanel';
-import API from '@/lib/axios';
-import { AxiosError } from 'axios';
-import { useSessionInput } from '@/hooks/useSessionInput';
+import { useSearchParams, useRouter } from "next/navigation";
+import OtpVerificationBox from "@/components/auth/OtpVerificationBox";
+import RightImagesPanel from "@/components/RightImagesPanel";
+import API from "@/lib/axios";
+import { AxiosError } from "axios";
+import { useSessionInput } from "@/hooks/useSessionInput";
 
 export default function VerifyOtpPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const [email] = useSessionInput('forgot_email');
-  const phone = searchParams.get('phone') || '';
+  const [email] = useSessionInput("forgot_email");
+  const phone = searchParams.get("phone") || "";
 
- const handleVerify = async (otp: string) => {
-  try {
-    const response = await API.post('/user/verify-otp', {
-      email,
-      otp,
-    });
+  const handleVerify = async (otp: string) => {
+    try {
+      const response = await API.post("/user/verify-otp", {
+        email,
+        otp: parseInt(otp, 10),
+      });
 
-    if (response.data.success) {
-      const { email: verifiedEmail, resetPasswordToken } = response.data.data;
+      if (response.data.success) {
+        const { email: verifiedEmail, resetPasswordToken } = response.data.data;
 
-      // ✅ Redirect to /resetPassword with both email and token
-      router.push(
-        `/resetPassword?email=${encodeURIComponent(verifiedEmail)}&token=${encodeURIComponent(resetPasswordToken)}`
-      );
+        // ✅ Redirect to /resetPassword with both email and token
+        router.push(
+          `/resetPassword?email=${encodeURIComponent(
+            verifiedEmail
+          )}&token=${encodeURIComponent(resetPasswordToken)}`
+        );
 
-      return { success: true, message: response.data.message };
-    } else {
+        return { success: true, message: response.data.message };
+      } else {
+        return {
+          success: false,
+          message: response.data.message || "OTP verification failed.",
+        };
+      }
+    } catch (error) {
+      const err = error as AxiosError<{ message: string }>;
       return {
         success: false,
-        message: response.data.message || 'OTP verification failed.',
+        message: err.response?.data?.message || "Server error occurred.",
       };
     }
-  } catch (error) {
-    const err = error as AxiosError<{ message: string }>;
-    return {
-      success: false,
-      message: err.response?.data?.message || 'Server error occurred.',
-    };
-  }
-};
-
+  };
 
   return (
     <div className="h-screen w-screen bg-secondary">

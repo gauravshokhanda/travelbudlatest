@@ -1,17 +1,17 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import Link from 'next/link';
-import Image from 'next/image';
-import { AxiosError } from 'axios';
-import { useRouter } from 'next/navigation';
+import { useState } from "react";
+import Link from "next/link";
+import Image from "next/image";
+import { AxiosError } from "axios";
+import { useRouter } from "next/navigation";
 
-import FormInput from '@/components/FormInput';
-import PasswordInput from '@/components/ui/PasswordInput';
-import PrimaryButton from '@/components/PrimaryButton';
-import OtpModal from '@/components/auth/OtpModal';
-import API from '@/lib/axios';
-import Spinner from '@/components/ui/spinner';
+import FormInput from "@/components/FormInput";
+import PasswordInput from "@/components/ui/PasswordInput";
+import PrimaryButton from "@/components/PrimaryButton";
+import OtpModal from "@/components/auth/OtpModal";
+import API from "@/lib/axios";
+import Spinner from "@/components/ui/spinner";
 
 import {
   validateEmail,
@@ -21,16 +21,16 @@ import {
   validateConfirmEmail,
   validateConfirmPassword,
   handleInputBlur,
-} from '@/lib/validators';
+} from "@/lib/validators";
 
 export default function RegisterForm() {
   const [formData, setFormData] = useState({
-    fullName: '',
-    mobileNumber: '',
-    email: '',
-    confirmEmail: '',
-    password: '',
-    confirmPassword: '',
+    fullName: "",
+    mobileNumber: "",
+    email: "",
+    confirmEmail: "",
+    password: "",
+    confirmPassword: "",
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -52,14 +52,15 @@ export default function RegisterForm() {
     setLoading(true);
 
     const finalErrors: Record<string, string> = {
-      fullName: validateFullName(formData.fullName) || '',
-      mobile: validateMobile(formData.mobileNumber) || '',
-      email: validateEmail(formData.email) || '',
+      fullName: validateFullName(formData.fullName) || "",
+      mobile: validateMobile(formData.mobileNumber) || "",
+      email: validateEmail(formData.email) || "",
       confirmEmail:
-        validateConfirmEmail(formData.email, formData.confirmEmail) || '',
-      password: validatePassword(formData.password) || '',
+        validateConfirmEmail(formData.email, formData.confirmEmail) || "",
+      password: validatePassword(formData.password) || "",
       confirmPassword:
-        validateConfirmPassword(formData.password, formData.confirmPassword) || '',
+        validateConfirmPassword(formData.password, formData.confirmPassword) ||
+        "",
     };
 
     setErrors(finalErrors);
@@ -72,9 +73,9 @@ export default function RegisterForm() {
       confirmPassword: true,
     });
 
-    const hasError = Object.values(finalErrors).some((err) => err !== '');
+    const hasError = Object.values(finalErrors).some((err) => err !== "");
     if (hasError) {
-      setMessage('Please fix the highlighted errors.');
+      setMessage("Please fix the highlighted errors.");
       setLoading(false);
       return;
     }
@@ -87,20 +88,20 @@ export default function RegisterForm() {
         phone_number: formData.mobileNumber,
       };
 
-      const response = await API.post('/user/register', payload);
+      const response = await API.post("/user/register", payload);
 
       if (!response.data.success) {
-        setMessage(`❌ ${response.data.message || 'Registration failed.'}`);
+        setMessage(`❌ ${response.data.message || "Registration failed."}`);
         setLoading(false);
         return;
       }
 
-      setMessage('✅ Registration successful!');
+      setMessage("✅ Registration successful!");
       setOtpModalError(null);
       setOtpModalOpen(true);
     } catch (error) {
       const err = error as AxiosError<{ message: string }>;
-      setMessage(err.response?.data?.message || 'Something went wrong.');
+      setMessage(err.response?.data?.message || "Something went wrong.");
     } finally {
       setLoading(false);
     }
@@ -109,12 +110,12 @@ export default function RegisterForm() {
   const handleResend = async () => {
     setResending(true);
     try {
-      await API.post('/user/resend-otp', { email: formData.email });
+      await API.post("/user/resend-otp", { email: formData.email });
       router.push(
         `/register/otpVerification?email=${formData.email}&phone=${formData.mobileNumber}`
       );
     } catch {
-      alert('Failed to resend OTP. Please try again.');
+      alert("Failed to resend OTP. Please try again.");
       setResending(false);
     }
   };
@@ -137,23 +138,29 @@ export default function RegisterForm() {
           height={100}
           priority
         />
-        <h2 className="text-3xl font-bold text-black mt-6 mb-2">Create Account</h2>
+        <h2 className="text-3xl font-bold text-black mt-6 mb-2">
+          Create Account
+        </h2>
       </div>
 
       {/* Form (scrollable) */}
       <div className="flex flex-col flex-grow overflow-hidden">
         <div className="overflow-y-auto scrollbar-hide pr-1 flex-grow">
-          <form onSubmit={handleSubmit} className="space-y-5" autoComplete="off">
+          <form
+            onSubmit={handleSubmit}
+            className="space-y-5"
+            autoComplete="off"
+          >
             <FormInput
               label="Full Name"
               placeholder="Enter full name"
               value={formData.fullName}
-              onChange={(e) => handleChange('fullName', e.target.value)}
+              onChange={(e) => handleChange("fullName", e.target.value)}
               onBlur={() => {
                 setTouched((prev) => ({ ...prev, fullName: true }));
                 setErrors((prev) => ({
                   ...prev,
-                  fullName: validateFullName(formData.fullName) || '',
+                  fullName: validateFullName(formData.fullName) || "",
                 }));
               }}
               error={touched.fullName ? errors.fullName : undefined}
@@ -164,10 +171,10 @@ export default function RegisterForm() {
               placeholder="Enter mobile number"
               prefix="+91"
               value={formData.mobileNumber}
-              onChange={(e) => handleChange('mobileNumber', e.target.value)}
+              onChange={(e) => handleChange("mobileNumber", e.target.value)}
               onBlur={() =>
                 handleInputBlur({
-                  field: 'mobile',
+                  field: "mobile",
                   mobile: formData.mobileNumber,
                   setTouched,
                   setErrors,
@@ -181,10 +188,10 @@ export default function RegisterForm() {
               type="email"
               placeholder="Enter email"
               value={formData.email}
-              onChange={(e) => handleChange('email', e.target.value)}
+              onChange={(e) => handleChange("email", e.target.value)}
               onBlur={() =>
                 handleInputBlur({
-                  field: 'email',
+                  field: "email",
                   email: formData.email,
                   setTouched,
                   setErrors,
@@ -198,13 +205,16 @@ export default function RegisterForm() {
               type="email"
               placeholder="Enter confirm email"
               value={formData.confirmEmail}
-              onChange={(e) => handleChange('confirmEmail', e.target.value)}
+              onChange={(e) => handleChange("confirmEmail", e.target.value)}
               onBlur={() => {
                 setTouched((prev) => ({ ...prev, confirmEmail: true }));
                 setErrors((prev) => ({
                   ...prev,
                   confirmEmail:
-                    validateConfirmEmail(formData.email, formData.confirmEmail) || '',
+                    validateConfirmEmail(
+                      formData.email,
+                      formData.confirmEmail
+                    ) || "",
                 }));
               }}
               error={touched.confirmEmail ? errors.confirmEmail : undefined}
@@ -214,10 +224,10 @@ export default function RegisterForm() {
               label="Password"
               placeholder="Enter password"
               value={formData.password}
-              onChange={(e) => handleChange('password', e.target.value)}
+              onChange={(e) => handleChange("password", e.target.value)}
               onBlur={() =>
                 handleInputBlur({
-                  field: 'password',
+                  field: "password",
                   password: formData.password,
                   setTouched,
                   setErrors,
@@ -230,7 +240,7 @@ export default function RegisterForm() {
               label="Confirm Password"
               placeholder="Enter confirm password"
               value={formData.confirmPassword}
-              onChange={(e) => handleChange('confirmPassword', e.target.value)}
+              onChange={(e) => handleChange("confirmPassword", e.target.value)}
               onBlur={() => {
                 setTouched((prev) => ({ ...prev, confirmPassword: true }));
                 setErrors((prev) => ({
@@ -239,20 +249,26 @@ export default function RegisterForm() {
                     validateConfirmPassword(
                       formData.password,
                       formData.confirmPassword
-                    ) || '',
+                    ) || "",
                 }));
               }}
-              error={touched.confirmPassword ? errors.confirmPassword : undefined}
+              error={
+                touched.confirmPassword ? errors.confirmPassword : undefined
+              }
             />
 
-            <PrimaryButton type="submit" className="w-full mb-2" disabled={loading}>
+            <PrimaryButton
+              type="submit"
+              className="w-full mb-2"
+              disabled={loading}
+            >
               {loading ? (
                 <div className="flex items-center justify-center">
                   <Spinner />
                   Signing up...
                 </div>
               ) : (
-                'Sign Up'
+                "Sign Up"
               )}
             </PrimaryButton>
 
@@ -269,7 +285,7 @@ export default function RegisterForm() {
             <button
               onClick={() => {
                 setRedirecting(true);
-                router.push('/login');
+                router.push("/login");
               }}
               disabled={redirecting}
               className="text-primary font-medium flex items-center gap-1"
@@ -287,21 +303,23 @@ export default function RegisterForm() {
         onClose={handleOtpClose}
         onVerify={async (otp) => {
           try {
-            const res = await API.post('/user/verify-email', {
+            const res = await API.post("/user/verify-email", {
               email: formData.email,
-              otp,
+              otp: parseInt(otp, 10),
             });
 
             if (res.data.success) {
               setOtpModalError(null);
               setOtpModalOpen(false);
-              router.push('/profile');
+              router.push("/profile");
             } else {
-              setOtpModalError(res.data.message || 'Verification failed.');
+              setOtpModalError(res.data.message || "Verification failed.");
             }
           } catch (err: unknown) {
             const error = err as Error;
-            setOtpModalError(error.message || 'Failed to verify OTP. Try again.');
+            setOtpModalError(
+              error.message || "Failed to verify OTP. Try again."
+            );
           }
         }}
         onResend={handleResend}

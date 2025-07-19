@@ -1,26 +1,26 @@
-'use client';
+"use client";
 
-import Image from 'next/image';
-import { useState, useRef, useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import PrimaryButton from '@/components/PrimaryButton';
-import SecondaryButton from '@/components/SecondaryButton';
-import { Button } from '@/components/ui/button';
-import API from '@/lib/axios';
-import { AxiosError } from 'axios';
+import Image from "next/image";
+import { useState, useRef, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import PrimaryButton from "@/components/PrimaryButton";
+import SecondaryButton from "@/components/SecondaryButton";
+import { Button } from "@/components/ui/button";
+import API from "@/lib/axios";
+import { AxiosError } from "axios";
 
 interface Props {
   onCancel?: () => void;
   onResend?: () => void;
-  authType?: 'login' | 'register';
+  authType?: "login" | "register";
 }
 
 export default function OtpVerificationBox({
   onCancel,
   onResend,
-  authType = 'login',
+  authType = "login",
 }: Props) {
-  const [otp, setOtp] = useState(Array(6).fill(''));
+  const [otp, setOtp] = useState(Array(6).fill(""));
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const [hasMounted, setHasMounted] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
@@ -28,7 +28,7 @@ export default function OtpVerificationBox({
 
   const router = useRouter();
   const searchParams = useSearchParams();
-  const email = searchParams.get('email') || '';
+  const email = searchParams.get("email") || "";
 
   useEffect(() => {
     setHasMounted(true);
@@ -45,36 +45,43 @@ export default function OtpVerificationBox({
     }
   };
 
-  const handleKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Backspace' && !otp[index] && index > 0) {
+  const handleKeyDown = (
+    index: number,
+    e: React.KeyboardEvent<HTMLInputElement>
+  ) => {
+    if (e.key === "Backspace" && !otp[index] && index > 0) {
       inputRefs.current[index - 1]?.focus();
     }
   };
 
   const handleVerifyClick = async () => {
-    const otpCode = otp.join('');
+    const otpCode = otp.join("");
 
     if (otpCode.length < 6 || !email) {
-      setMessage('Please enter a valid 6-digit OTP and email.');
+      setMessage("Please enter a valid 6-digit OTP and email.");
       return;
     }
 
     try {
       setLoading(true);
-      const payload = { otp: otpCode, email };
-      const response = await API.post('/user/verify-email', payload);
+      const payload = { otp: parseInt(otpCode, 10), email };
+      const response = await API.post("/user/verify-email", payload);
 
       if (response.data.success) {
-        setMessage('✅ ' + response.data.message);
+        setMessage("✅ " + response.data.message);
         setTimeout(() => {
-          router.push('/');
+          router.push("/");
         }, 1000);
       } else {
-        setMessage('❌ ' + (response.data.message || 'OTP verification failed.'));
+        setMessage(
+          "❌ " + (response.data.message || "OTP verification failed.")
+        );
       }
     } catch (error) {
       const err = error as AxiosError<{ message: string }>;
-      setMessage('❌ ' + (err.response?.data?.message || 'Server error occurred.'));
+      setMessage(
+        "❌ " + (err.response?.data?.message || "Server error occurred.")
+      );
     } finally {
       setLoading(false);
     }
@@ -93,11 +100,13 @@ export default function OtpVerificationBox({
         />
 
         {/* Heading */}
-        <h2 className="text-3xl font-bold text-black text-center mb-4">OTP Verification</h2>
+        <h2 className="text-3xl font-bold text-black text-center mb-4">
+          OTP Verification
+        </h2>
         <p className="text-center text-sm text-gray-600 mb-8">
-          {authType === 'register'
-            ? 'Enter verification code sent to'
-            : 'Enter the OTP sent to'}
+          {authType === "register"
+            ? "Enter verification code sent to"
+            : "Enter the OTP sent to"}
           <br />
           <span className="font-medium">{email}</span>
         </p>
@@ -108,9 +117,8 @@ export default function OtpVerificationBox({
             <input
               key={index}
               ref={(el) => {
-  inputRefs.current[index] = el;
-}}
-
+                inputRefs.current[index] = el;
+              }}
               maxLength={1}
               value={digit}
               onChange={(e) => handleChange(index, e.target.value)}
@@ -154,7 +162,7 @@ export default function OtpVerificationBox({
           onClick={handleVerifyClick}
           disabled={loading}
         >
-          {loading ? 'Verifying...' : 'Verify'}
+          {loading ? "Verifying..." : "Verify"}
         </PrimaryButton>
       </div>
     </div>

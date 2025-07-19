@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Firebase Phone OTP</title>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        padding: 20px;
+      }
+      input,
+      button {
+        padding: 8px;
+        margin: 6px;
+        width: 250px;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>📲 Firebase Phone OTP Verification</h2>
+
+    <input id="phoneNumber" type="tel" placeholder="+91XXXXXXXXXX" />
+    <button onclick="sendOTP()">Send OTP</button><br />
+
+    <input id="otpCode" type="text" placeholder="Enter OTP" />
+    <button onclick="verifyOTP()">Verify OTP</button>
+
+    <div id="recaptcha-container"></div>
+    <p id="status"></p>
+
+    <script>
+      // ✅ Firebase config
+      const firebaseConfig = {
+        apiKey: "AIzaSyAOGSfy0C9TvUeccPZWvcLbQ3ZqF7n0ipI",
+        authDomain: "travelbudtesting.firebaseapp.com",
+        projectId: "travelbudtesting",
+        storageBucket: "travelbudtesting.firebasestorage.app",
+        messagingSenderId: "435208165626",
+        appId: "1:435208165626:web:435a75bd979f1de6d59143",
+        measurementId: "G-GQD0CTFRZ8",
+      };
+
+      firebase.initializeApp(firebaseConfig);
+      const auth = firebase.auth();
+
+      let confirmationResult = null;
+
+      function sendOTP() {
+        const phoneNumber = document.getElementById("phoneNumber").value;
+        document.getElementById("status").innerText = "Sending OTP...";
+
+        // ✅ Only render reCAPTCHA once
+        if (!window.recaptchaVerifier) {
+          window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier(
+            "recaptcha-container",
+            {
+              size: "invisible",
+              callback: () => {},
+            }
+          );
+        }
+
+        auth
+          .signInWithPhoneNumber(phoneNumber, window.recaptchaVerifier)
+          .then((result) => {
+            confirmationResult = result;
+            document.getElementById("status").innerText = "✅ OTP Sent!";
+          })
+          .catch((error) => {
+            console.error(error);
+            document.getElementById("status").innerText = "❌ " + error.message;
+          });
+      }
+
+      function verifyOTP() {
+        const otpCode = document.getElementById("otpCode").value;
+        if (!confirmationResult) {
+          document.getElementById("status").innerText = "❌ OTP not sent yet.";
+          return;
+        }
+
+        document.getElementById("status").innerText = "Verifying OTP...";
+        confirmationResult
+          .confirm(otpCode)
+          .then(async (result) => {
+            const user = result.user;
+            const idToken = await user.getIdToken();
+
+            document.getElementById("status").innerText =
+              "✅ Verified: " + user.phoneNumber;
+            console.log("Phone:", user.phoneNumber);
+            console.log("Firebase ID Token:", idToken);
+
+            // 👉 Send `idToken` to your backend here using fetch()
+          })
+          .catch((error) => {
+            console.error(error);
+            document.getElementById("status").innerText = "❌ " + error.message;
+          });
+      }
+    </script>
+  </body>
+</html>
