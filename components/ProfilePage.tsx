@@ -19,6 +19,9 @@ import { RootState } from '@/store';
 import { logout } from '@/store/slices/authSlice';
 import { Button } from '@/components/ui/button';
 import PrimaryButton from '@/components/PrimaryButton';
+import Spinner from './ui/spinner';
+import { useEffect } from 'react';
+import { usePathname } from 'next/navigation';
 
 type User = {
   id: string;
@@ -41,7 +44,7 @@ type User = {
 export default function ProfilePage() {
   const dispatch = useDispatch();
   const router = useRouter();
-
+  const [loginLoading, setLoginLoading] = useState(false);
   const [tab, setTab] = useState<'traveling' | 'hosting'>('traveling');
 
   const user = useSelector((state: RootState) => state.auth.user) as User | null;
@@ -57,6 +60,7 @@ export default function ProfilePage() {
   const handleLogout = () => {
     dispatch(logout());
     localStorage.clear();
+
   };
 
   if (!user) {
@@ -69,9 +73,22 @@ export default function ProfilePage() {
           <p className="text-center text-gray-700 text-sm sm:text-base max-w-md mb-4">
             Login to list your property as well as search and book wonderful stays
           </p>
-          <PrimaryButton onClick={() => router.push('/login')}>
-            Login
+          <PrimaryButton
+            onClick={() => {
+              setLoginLoading(true);
+              router.push('/login');
+            }}
+          >
+            {loginLoading ? (
+              <div className="flex items-center gap-2">
+                <Spinner className="w-5 h-5 text-white" />
+              </div>
+            ) : (
+              'Login'
+            )}
           </PrimaryButton>
+
+
         </div>
 
         <div className="w-full max-w-4xl grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -90,7 +107,16 @@ export default function ProfilePage() {
   }
 
   return (
+
     <div className="min-h-screen bg-white py-10 px-4 sm:px-8 max-w-5xl mx-auto">
+      {loginLoading && (
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center">
+          <div className="flex flex-col items-center gap-3">
+            <Spinner className="w-10 h-10 text-white" />
+            <p className="text-white text-sm font-medium">Redirecting to login...</p>
+          </div>
+        </div>
+      )}
       <div className="flex justify-center mb-10">
         <div className="flex bg-gray-200 rounded-full overflow-hidden">
           <Button
@@ -183,8 +209,8 @@ export default function ProfilePage() {
             <p className="text-accent">ID Verification Status</p>
             <p className={
               user?.idProofStatus === 'verified' ? 'text-green-600' :
-              user?.idProofStatus === 'pending' ? 'text-yellow-500' :
-              'text-red-500'
+                user?.idProofStatus === 'pending' ? 'text-yellow-500' :
+                  'text-red-500'
             }>
               {user?.idProofStatus || 'Not Verified'}
             </p>

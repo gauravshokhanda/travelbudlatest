@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import LoginForm from '@/components/auth/LoginForm';
 import LoginWithMobile from '@/components/auth/LoginWithMobile';
-import OtpModal from '@/components/auth/OtpModal';
+import PhoneOtpModal from '@/components/auth/PhoneOtpModal';
 import { Button } from '@/components/ui/button';
 import SignupPrompt from '@/components/ui/signUpPrompt';
 import RightImagesPanel from '@/components/RightImagesPanel';
@@ -44,6 +44,7 @@ export default function LoginPage() {
 
   return (
     <main className="bg-white w-screen h-screen overflow-hidden">
+      <div id="recaptcha-container" />
       <div className="h-full w-full grid grid-cols-1 lg:grid-cols-2">
         {/* Left Side */}
         <div className="flex flex-col items-center justify-center px-4 md:px-8 py-6 h-full">
@@ -108,17 +109,15 @@ export default function LoginPage() {
       </div>
 
       {/* OTP Modal */}
-      <OtpModal
-        isOpen={otpModalOpen}
-        onClose={() => setOtpModalOpen(false)}
-        onVerify={(otp) => {
-          console.log('✅ OTP entered:', otp);
-          setOtpModalOpen(false);
-        }}
-        onResend={handleResend}
-        phone={phone}
-        email={email}
-      />
+     <PhoneOtpModal
+  isOpen={otpModalOpen}
+  onClose={() => setOtpModalOpen(false)}
+  phone={phone}
+  onVerified={(idToken) => {
+    setOtpModalOpen(false);
+  }}
+/>
+
     </main>
   );
 }

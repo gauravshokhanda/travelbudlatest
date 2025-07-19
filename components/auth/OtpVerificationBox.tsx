@@ -34,7 +34,7 @@ export default function OtpVerificationBox({
   illustration,
 }: OtpVerificationBoxProps) {
   const [otp, setOtp] = useState(Array(6).fill(''));
-  const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+  const inputRefs = useRef<HTMLInputElement[]>([]);
   const [message, setMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -60,6 +60,15 @@ export default function OtpVerificationBox({
   const handleKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Backspace' && !otp[index] && index > 0) {
       inputRefs.current[index - 1]?.focus();
+    }
+  };
+  const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
+    const pasted = e.clipboardData.getData('text').trim();
+    if (/^\d{6}$/.test(pasted)) {
+      const digits = pasted.split('');
+      setOtp(digits);
+      sessionStorage.setItem('otp_code', digits.join(''));
+      setTimeout(() => inputRefs.current[5]?.focus(), 50);
     }
   };
 
@@ -113,13 +122,16 @@ export default function OtpVerificationBox({
 
             {/* OTP inputs row */}
             <div className="flex justify-start gap-2 mt-2">
-              {otp.map((digit, index) => (
+              {otp.map((digit, index) => ( 
                 <OtpInput
                   key={index}
                   value={digit}
+                  onPaste={handlePaste}
                   onChange={(e) => handleChange(index, e.target.value)}
                   onKeyDown={(e) => handleKeyDown(index, e)}
-                  inputRef={(el) => (inputRefs.current[index] = el)}
+                  inputRef={(el) => {
+                    if (el) inputRefs.current[index] = el;
+                  }}
                   hasError={hasError}
                 />
               ))}
@@ -134,12 +146,12 @@ export default function OtpVerificationBox({
 
             {/* Resend Timer */}
             <div className="mt-4">
-             <ResendTimerButton
-  email={email} // ✅ This was missing
-  onResendConfirm={() => {
-    console.log('Resending OTP...');
-  }}
-/>
+              <ResendTimerButton
+                email={email} // ✅ This was missing
+                onResendConfirm={() => {
+                  console.log('Resending OTP...');
+                }}
+              />
             </div>
           </div>
 

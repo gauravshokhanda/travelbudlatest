@@ -8,6 +8,7 @@ interface OtpInputProps {
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
   hasError?: boolean;
+   onPaste?: (e: React.ClipboardEvent<HTMLInputElement>) => void;
   inputRef?: (el: HTMLInputElement | null) => void;
 }
 
@@ -15,15 +16,17 @@ export default function OtpInput({
   value,
   onChange,
   onKeyDown,
+  onPaste,
   hasError = false,
   inputRef,
 }: OtpInputProps) {
-  return (
+  return (  
     <input
       ref={inputRef}
       maxLength={1}
       value={value}
       onChange={onChange}
+       onPaste={onPaste}
       onKeyDown={onKeyDown}
       className={`w-12 h-12 text-center text-lg rounded-lg shadow-sm outline-none transition-all ${
   hasError

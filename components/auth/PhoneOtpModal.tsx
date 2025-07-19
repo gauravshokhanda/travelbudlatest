@@ -5,43 +5,39 @@ import { X } from 'lucide-react';
 import Spinner from '@/components/ui/spinner';
 import PrimaryButton from '@/components/PrimaryButton';
 import SecondaryButton from '@/components/SecondaryButton';
+import { sendOTP, verifyOTP } from '@/firebase/phoneAuth';
 
-interface OtpModalProps {
+interface PhoneOtpModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onVerify: (otp: string) => void;
-  onResend: () => void;
-  email: string;
-  error?: string | null;
-  resending?: boolean;
-  phone?: string;
+  onVerified: (idToken: string) => void;
+  phone: string;
 }
 
-export default function OtpModal({
+export default function PhoneOtpModal({
   isOpen,
   onClose,
-  onVerify,
-  onResend,
-  email,
+  onVerified,
   phone,
-  error,
-  resending = false,
-}: OtpModalProps) {
+}: PhoneOtpModalProps) {
   const [otp, setOtp] = useState(Array(6).fill(''));
-  const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+  const [error, setError] = useState<string | null>(null);
   const [timeLeft, setTimeLeft] = useState(120);
+  const [loading, setLoading] = useState(false);
+  const [sending, setSending] = useState(false);
+  const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+
   const isOtpComplete = otp.every((digit) => digit !== '');
 
-  // Reset OTP and timer
   useEffect(() => {
     if (isOpen) {
       setOtp(Array(6).fill(''));
       setTimeLeft(120);
       setTimeout(() => inputRefs.current[0]?.focus(), 100);
+      handleSendOTP();
     }
   }, [isOpen]);
 
-  // Countdown timer
   useEffect(() => {
     let timer: NodeJS.Timeout;
     if (isOpen && timeLeft > 0) {
@@ -50,15 +46,37 @@ export default function OtpModal({
     return () => clearTimeout(timer);
   }, [timeLeft, isOpen]);
 
-  // Format timer display
-  const formatTime = (seconds: number) =>
-    `${Math.floor(seconds / 60)}:${(seconds % 60).toString().padStart(2, '0')}`;
+  const handleSendOTP = async () => {
+    setSending(true);
+    const res = await sendOTP(`${phone}`);
+    if (!res.success) {
+      setError(res.error || 'Failed to send OTP');
+    } else {
+      setError(null);
+    }
+    setSending(false);
+  };
+
+  const handleVerify = async () => {
+    setLoading(true);
+    const result = await verifyOTP(otp.join(''));
+    if (result.success && result.idToken) {
+      setError(null);
+      onVerified(result.idToken);
+    } else {
+      setError(result.error || 'OTP verification failed');
+    }
+    setLoading(false);
+  };
+
+  const formatTime = (s: number) =>
+    `${Math.floor(s / 60)}:${(s % 60).toString().padStart(2, '0')}`;
 
   const handleChange = (index: number, value: string) => {
     if (/^\d?$/.test(value)) {
-      const updatedOtp = [...otp];
-      updatedOtp[index] = value;
-      setOtp(updatedOtp);
+      const newOtp = [...otp];
+      newOtp[index] = value;
+      setOtp(newOtp);
       if (value && index < 5) inputRefs.current[index + 1]?.focus();
     }
   };
@@ -78,10 +96,6 @@ export default function OtpModal({
     }
   };
 
-  const handleVerify = () => {
-    onVerify(otp.join('')); // ✅ Directly call parent's API handler
-  };
-
   if (!isOpen) return null;
 
   return (
@@ -94,10 +108,11 @@ export default function OtpModal({
           <X className="w-5 h-5" />
         </button>
 
-        <h2 className="text-xl font-semibold text-center mb-1 text-black">OTP Verification</h2>
+        <h2 className="text-xl font-semibold text-center mb-1 text-black">
+          Verify Mobile OTP
+        </h2>
         <p className="text-sm text-text text-center mb-4">
-          Enter verification code sent to{' '}
-          <span className="font-medium">{phone || email}</span>
+          Code sent to <span className="font-medium">+91{phone}</span>
         </p>
 
         <div className="flex justify-center gap-2 mb-2">
@@ -127,22 +142,21 @@ export default function OtpModal({
             <span>Resend OTP in {formatTime(timeLeft)}</span>
           ) : (
             <button
-              onClick={onResend}
+              onClick={handleSendOTP}
               className="hover:underline flex items-center gap-1"
-              disabled={resending}
+              disabled={sending}
             >
-              {resending && <Spinner />}
-              Resend OTP
+              {sending && <Spinner />} Resend OTP
             </button>
           )}
         </div>
 
         <PrimaryButton
           onClick={handleVerify}
-          disabled={!isOtpComplete}
+          disabled={!isOtpComplete || loading}
           className="w-full"
         >
-          Verify
+          {loading ? <Spinner /> : 'Verify & Continue'}
         </PrimaryButton>
 
         <SecondaryButton onClick={onClose} className="mt-2 w-full">

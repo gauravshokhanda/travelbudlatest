@@ -40,53 +40,56 @@ export default function LoginForm() {
   console.log("✅ Redux user value:", reduxUser);
   console.log("Redux after dispatch – token:", reduxToken);
 
- const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
 
-  const emailError = validateEmail(email);
-  const passwordError = validatePassword(password);
+    const emailError = validateEmail(email);
+    const passwordError = validatePassword(password);
 
-  setTouched({ email: true, password: true });
-  setErrors({ email: emailError, password: passwordError });
+    setTouched({ email: true, password: true });
+    setErrors({ email: emailError, password: passwordError });
 
-  if (emailError || passwordError) return;
+    if (emailError || passwordError) return;
 
-  setLoading(true); // ✅ show button spinner
+    setLoading(true); // ✅ show button spinner
 
-  try {
-    const res = await API.post("/user/login", { email, password });
+    try {
+      const res = await API.post("/user/login", { email, password });
 
-    if (!res.data.success) {
-      setMessage(`❌ ${res.data.message || "Login failed."}`);
-      return;
+      if (!res.data.success) {
+        setMessage(`❌ ${res.data.message || "Login failed."}`);
+        return;
+      }
+
+      const user = res.data.data;
+      localStorage.setItem("token", user.token);
+      localStorage.setItem("user", JSON.stringify(user));
+      dispatch(setUser({ user, token: user.token }));
+
+      setMessage(`✅ Welcome, ${user.name}`);
+      router.push("/profile");
+    } catch (err: unknown) {
+      const axiosError = err as { response?: { data?: { message?: string } } };
+      const errorMessage =
+        axiosError?.response?.data?.message || "Something went wrong.";
+      setMessage(`❌ ${errorMessage}`);
+    } finally {
+      setLoading(false); // ✅ hide button spinner
     }
-
-    const user = res.data.data;
-    localStorage.setItem("token", user.token);
-    localStorage.setItem("user", JSON.stringify(user));
-    dispatch(setUser({ user, token: user.token }));
-
-    setMessage(`✅ Welcome, ${user.name}`);
-    router.push("/profile");
-  } catch (err: unknown) {
-    const axiosError = err as { response?: { data?: { message?: string } } };
-    const errorMessage =
-      axiosError?.response?.data?.message || "Something went wrong.";
-    setMessage(`❌ ${errorMessage}`);
-  } finally {
-    setLoading(false); // ✅ hide button spinner
-  }
-};
+  };
 
 
 
   return (
     <div className="w-full max-w-md">
-      {redirecting && (
-        <div className="absolute inset-0 bg-white/60 flex items-center justify-center z-50 rounded-lg">
-          <Spinner />
+      {loading && (
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center">
+          <div className="flex flex-col items-center gap-3">
+            <Spinner className="w-10 h-10 text-white" />
+          </div>
         </div>
       )}
+
       <form onSubmit={handleSubmit} className="space-y-6">
         <FormInput
           label="Email"
@@ -142,7 +145,7 @@ export default function LoginForm() {
         <PrimaryButton type="submit" className="w-full">
           <div className="flex items-center justify-center gap-2">
             {loading && <Spinner />}
-            {loading ? "Logging in..." : "Log in"}
+            {loading ? "" : "Log in"}
           </div>
         </PrimaryButton>
 

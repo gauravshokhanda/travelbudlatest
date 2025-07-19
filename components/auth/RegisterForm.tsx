@@ -128,7 +128,15 @@ export default function RegisterForm() {
   };
 
   return (
+
     <div className="w-full max-w-md h-full flex flex-col">
+      {redirecting && (
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center">
+          <div className="flex flex-col items-center gap-3">
+            <Spinner className="w-10 h-10 text-white" />
+          </div>
+        </div>
+      )}
       {/* Header */}
       <div className="flex flex-col items-center mb-4 shrink-0">
         <Image
@@ -141,6 +149,15 @@ export default function RegisterForm() {
         <h2 className="text-3xl font-bold text-black mt-6 mb-2">
           Create Account
         </h2>
+        {message && (
+  <p
+    className={`text-sm text-center mt-2 ${
+      message.startsWith("✅") ? "text-green-600" : "text-red-600"
+    }`}
+  >
+    {message}
+  </p>
+)}
       </div>
 
       {/* Form (scrollable) */}
@@ -171,7 +188,10 @@ export default function RegisterForm() {
               placeholder="Enter mobile number"
               prefix="+91"
               value={formData.mobileNumber}
-              onChange={(e) => handleChange("mobileNumber", e.target.value)}
+              onChange={(e) => {
+                const value = e.target.value.replace(/\D/g, '').slice(0, 10); // only digits, max 10
+                handleChange("mobileNumber", value);
+              }}
               onBlur={() =>
                 handleInputBlur({
                   field: "mobile",
@@ -182,6 +202,7 @@ export default function RegisterForm() {
               }
               error={touched.mobile ? errors.mobile : undefined}
             />
+
 
             <FormInput
               label="Email"
@@ -265,16 +286,16 @@ export default function RegisterForm() {
               {loading ? (
                 <div className="flex items-center justify-center">
                   <Spinner />
-                  Signing up...
+
                 </div>
               ) : (
                 "Sign Up"
               )}
             </PrimaryButton>
 
-            {message && (
+            {/* {message && (
               <p className="text-sm text-center text-accent mt-2">{message}</p>
-            )}
+            )} */}
           </form>
         </div>
 
